@@ -233,3 +233,29 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             ast.unparse(node)
         )
+        
+    def visit_For(self, node):
+
+        self.write(
+            f"for {ast.unparse(node.target)} in {ast.unparse(node.iter)}:"
+        )
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+    
+    def visit_For(self, node):
+
+        self.write(
+            f"for {ast.unparse(node.target)} in {ast.unparse(node.iter)}:"
+    )
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1

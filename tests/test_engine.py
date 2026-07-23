@@ -76,5 +76,26 @@ def hello():
         )
 
 
+    def test_for_loop(self):
+
+        code = """
+def process(items):
+ for item in items:
+  print(item)
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "for item in items:",
+            result
+        )
+
+        self.assertIn(
+            "print(item)",
+            result
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

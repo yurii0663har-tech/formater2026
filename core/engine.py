@@ -221,3 +221,15 @@ class FormatterEngine(ast.NodeVisitor):
     def visit_Continue(self, node):
 
         self.write("continue")
+        
+    def visit_Import(self, node):
+
+        self.write(
+            ast.unparse(node)
+        )
+        
+    def visit_ImportFrom(self, node):
+
+        self.write(
+            ast.unparse(node)
+        )

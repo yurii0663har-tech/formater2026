@@ -1,33 +1,11 @@
 import ast
+import textwrap
 
 
-class PythonParser:
-
-    def __init__(self):
-        self.tree = None
-
+class Parser:
 
     def parse(self, code: str):
 
-        try:
-            self.tree = ast.parse(code)
-            return self.tree
+        code = textwrap.dedent(code)
 
-        except SyntaxError as error:
-            return error
-
-
-    def get_structure(self):
-
-        if not self.tree:
-            return None
-
-        result = []
-
-        for node in ast.walk(self.tree):
-
-            result.append(
-                type(node).__name__
-            )
-
-        return result
+        return ast.parse(code)

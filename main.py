@@ -1,7 +1,7 @@
 import ast
 
 from core.engine import FormatterEngine
-
+from core.config import FormatterConfig
 
 code = """
 def process(items):

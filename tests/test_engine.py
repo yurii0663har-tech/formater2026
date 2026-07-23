@@ -97,5 +97,26 @@ def process(items):
         )
 
 
+    def test_while_and_return(self):
+
+        code = """
+def process():
+ while True:
+  return 1
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "while True:",
+            result
+        )
+
+        self.assertIn(
+            "return 1",
+            result
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

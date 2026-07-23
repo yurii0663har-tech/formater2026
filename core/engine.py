@@ -259,3 +259,23 @@ class FormatterEngine(ast.NodeVisitor):
             self.visit(item)
 
         self.level -= 1
+        
+    def visit_While(self, node):
+
+        self.write(
+            f"while {ast.unparse(node.test)}:"
+        )
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+
+
+    def visit_Return(self, node):
+
+        self.write(
+            ast.unparse(node)
+        )

@@ -116,7 +116,59 @@ def process():
             "return 1",
             result
         )
+        def test_try_except(self):
 
+            code = """
+    def load():
+     try:
+      print("start")
+      except Exception:
+       print("error")
+      """
+
+            result = self.formatter.format(code)
+
+            self.assertIn(
+                "try:",
+                result
+            )
+
+            self.assertIn(
+                "except Exception:",
+                result
+        )
+
+            self.assertIn(
+                "print('error')",
+                result
+            )
+            
+    def test_try_except(self):
+
+        code = """
+def load():
+ try:
+  print("start")
+ except Exception:
+  print("error")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "try:",
+            result
+        )
+
+        self.assertIn(
+            "except Exception:",
+            result
+        )
+
+        self.assertIn(
+            "print('error')",
+            result
+        )
 
 if __name__ == "__main__":
     unittest.main()

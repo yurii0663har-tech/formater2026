@@ -279,3 +279,87 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             ast.unparse(node)
         )
+        
+    def visit_Try(self, node):
+
+        self.write("try:")
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+
+
+        for handler in node.handlers:
+
+            if handler.type:
+                self.write(
+                    f"except {ast.unparse(handler.type)}:"
+                )
+            else:
+                self.write(
+                    "except:"
+                )
+
+            self.level += 1
+
+            for item in handler.body:
+                self.visit(item)
+
+            self.level -= 1
+
+
+        if node.finalbody:
+
+            self.write("finally:")
+
+            self.level += 1
+
+            for item in node.finalbody:
+                self.visit(item)
+
+            self.level -= 1
+    
+        def visit_Try(self, node):
+
+            self.write("try:")
+
+            self.level += 1
+
+            for item in node.body:
+                self.visit(item)
+
+                self.level -= 1
+
+
+                for handler in node.handlers:
+
+                    if handler.type:
+                        self.write(
+                            f"except {ast.unparse(handler.type)}:"
+                    )
+                    else:
+                        self.write(
+                        "except:"
+                        )
+
+                self.level += 1
+
+                for item in handler.body:
+                    self.visit(item)
+
+                self.level -= 1
+
+
+            if node.finalbody:
+
+                self.write("finally:")
+
+                self.level += 1
+
+                for item in node.finalbody:
+                    self.visit(item)
+
+                self.level -= 1

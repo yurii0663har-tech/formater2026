@@ -170,5 +170,21 @@ def load():
             result
         )
 
+
+    
+    def test_with_statement(self):
+        source = '''
+    with open("file.txt") as f:
+        print(f.read())
+'''
+
+        result = self.formatter.format(source)
+
+       
+        self.assertIn(
+            "with open('file.txt') as f:",
+    result
+)
+    
 if __name__ == "__main__":
     unittest.main()

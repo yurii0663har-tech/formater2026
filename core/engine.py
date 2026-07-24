@@ -363,3 +363,23 @@ class FormatterEngine(ast.NodeVisitor):
                     self.visit(item)
 
                 self.level -= 1
+                
+    def visit_With(self, node):
+
+        items = []
+
+        for item in node.items:
+            items.append(
+                ast.unparse(item)
+            )
+
+        self.write(
+            f"with {', '.join(items)}:"
+        )
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1

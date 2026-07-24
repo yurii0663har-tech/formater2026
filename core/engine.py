@@ -274,11 +274,7 @@ class FormatterEngine(ast.NodeVisitor):
         self.level -= 1
 
 
-    def visit_Return(self, node):
 
-        self.write(
-            ast.unparse(node)
-        )
         
     def visit_Try(self, node):
 
@@ -383,3 +379,4 @@ class FormatterEngine(ast.NodeVisitor):
             self.visit(stmt)
 
         self.level -= 1
+        

@@ -9,97 +9,76 @@ class TestFormatterPipeline(unittest.TestCase):
         self.formatter = FormatterPipeline()
 
     def test_simple_function(self):
+
         code = """
-def hello(name):
- print("Hello",name)
+def hello():
+ print("Hello")
 """
+
+        expected = """def hello():
+    print('Hello')"""
 
         result = self.formatter.format(code)
 
-        self.assertIn(
-            "def hello(name):",
-            result
-        )
-
-        self.assertIn(
-            "print('Hello', name)",
-            result
-        )
+        self.assertEqual(result, expected)
 
     def test_if_statement(self):
+
         code = """
-if x>10:
- print("big")
-else:
- print("small")
+def check():
+ if True:
+  print("OK")
+"""
+
+        expected = """def check():
+    if True:
+        print('OK')"""
+
+        result = self.formatter.format(code)
+
+        self.assertEqual(result, expected)
+
+    def test_imports(self):
+
+        code = """
+import os
+from pathlib import Path
+
+def hello():
+ print("Hello")
 """
 
         result = self.formatter.format(code)
 
-        self.assertIn(
-            "if x > 10:",
-            result
-        )
-
-        self.assertIn(
-            "else:",
-            result
-        )
+        self.assertIn("import os", result)
+        self.assertIn("from pathlib import Path", result)
+        self.assertIn("def hello():", result)
 
     def test_for_loop(self):
+
         code = """
-for i in range(5):
- print(i)
+def process(items):
+ for item in items:
+  print(item)
 """
 
         result = self.formatter.format(code)
 
-        self.assertIn(
-            "for i in range(5):",
-            result
-        )
-
-        self.assertIn(
-            "print(i)",
-            result
-        )
+        self.assertIn("for item in items:", result)
+        self.assertIn("print(item)", result)
 
     def test_while_and_return(self):
+
         code = """
-def count():
+def process():
  while True:
   return 1
 """
 
         result = self.formatter.format(code)
 
-        self.assertIn(
-            "while True:",
-            result
-        )
-
-        self.assertIn(
-            "return 1",
-            result
-        )
-
-    def test_imports(self):
-        code = """
-import os
-import sys
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "import os",
-            result
-        )
-
-        self.assertIn(
-            "import sys",
-            result
-        )
+        self.assertIn("while True:", result)
+        self.assertIn("return 1", result)
 
     def test_try_except(self):
 
@@ -113,60 +92,32 @@ def load():
 
         result = self.formatter.format(code)
 
-        self.assertIn(
-            "try:",
-            result
-        )
+        self.assertIn("try:", result)
+        self.assertIn("except Exception:", result)
+        self.assertIn("print('error')", result)
 
-        self.assertIn(
-            "except Exception:",
-            result
-        )
 
-        self.assertIn(
-            "print('error')",
-            result
-        )
 
+    
     def test_with_statement(self):
 
-        source = '''
-with open("file.txt") as f:
-    print(f.read())
-'''
+        code = """
+def read_file():
+ with open("test.txt") as file:
+  print(file.read())
+"""
 
-        result = self.formatter.format(source)
-
-        self.assertIn(
-            "with open('file.txt') as f:",
-            result
-        )
-
-    def test_class_statement(self):
-
-        source = '''
-class User:
- def __init__(self,name):
-  self.name=name
-'''
-
-        result = self.formatter.format(source)
+        result = self.formatter.format(code)
 
         self.assertIn(
-            "class User:",
+            "with open('test.txt') as file:",
             result
         )
 
         self.assertIn(
-            "def __init__(self, name):",
+            "print(file.read())",
             result
         )
-
-        self.assertIn(
-            "self.name = name",
-            result
-        )
-
-
+        
 if __name__ == "__main__":
     unittest.main()

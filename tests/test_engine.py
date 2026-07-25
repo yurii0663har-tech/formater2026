@@ -145,7 +145,30 @@ class User:
             "print('Hi')",
             result
         )
+    def test_class_constructor(self):
 
+        code = """
+class User:
+ def __init__(self,name):
+  self.name=name
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "class User:",
+            result
+        )
+
+        self.assertIn(
+            "def __init__(self, name):",
+            result
+        )
+
+        self.assertIn(
+            "self.name = name",
+            result
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -119,5 +119,33 @@ def read_file():
             result
         )
         
+
+    
+    def test_class_statement(self):
+
+        code = """
+class User:
+ def hello(self):
+  print("Hi")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "class User:",
+            result
+        )
+
+        self.assertIn(
+            "def hello(self):",
+            result
+        )
+
+        self.assertIn(
+            "print('Hi')",
+            result
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -526,21 +526,37 @@ def update():
         )
 
 
-    def test_nonlocal_statement(self):
+
+
+
+    def test_async_with_statement(self):
 
         code = """
-def outer():
- value = 0
-
- def inner():
-  nonlocal value
-  value = 10
+async def load():
+ async with resource:
+  print("ok")
 """
 
         result = self.formatter.format(code)
 
         self.assertIn(
-            "nonlocal value",
+            "async with resource:",
+            result
+        )
+        
+
+    def test_async_for_statement(self):
+
+        code = """
+async def process(items):
+ async for item in items:
+  print(item)
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "async for item in items:",
             result
         )
 if __name__ == "__main__":

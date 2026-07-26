@@ -448,6 +448,21 @@ def fail():
             result
         )
         
+    def test_await_expression(self):
+
+        code = """
+async def load():
+ result = await fetch()
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "await fetch()",
+            result
+        )
+        
     def test_yield_statement(self):
 
         code = """
@@ -461,6 +476,19 @@ def numbers():
             "yield 1",
             result
         )
+    def test_yield_from_statement(self):
+
+        code = """
+def generator(items):
+ yield from items
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "yield from items",
+            result
+        ) 
         
     def test_break_statement(self):
 
@@ -938,6 +966,33 @@ def run(args, options):
 
         self.assertIn(
             "**options",
+            result
+        )
+        
+    def test_slice_expression(self):
+
+        code = """
+def cut(items):
+ first = items[1:5]
+ second = items[:10]
+ third = items[::2]
+ return first, second, third
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "items[1:5]",
+            result
+        )
+
+        self.assertIn(
+            "items[:10]",
+            result
+        )
+
+        self.assertIn(
+            "items[::2]",
             result
         )
 if __name__ == "__main__":

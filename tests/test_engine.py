@@ -885,6 +885,21 @@ def info(user, count):
             "count + 1",
             result
         )
+        
+    def test_starred_expression(self):
+
+        code = """
+def expand(items):
+ result = [*items]
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "*items",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

@@ -670,6 +670,26 @@ def check(x, y):
             "x > 10 and y != 0",
             result
         )
+        
+    def test_unary_expression(self):
+
+        code = """
+def check(value):
+ if not value:
+  return -value
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "not value",
+            result
+        )
+
+        self.assertIn(
+            "-value",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

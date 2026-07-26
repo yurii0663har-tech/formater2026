@@ -461,6 +461,37 @@ def numbers():
             "yield 1",
             result
         )
+        
+    def test_break_statement(self):
+
+        code = """
+def process():
+ while True:
+  break
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "break",
+            result
+        )
+
+
+    def test_continue_statement(self):
+
+        code = """
+def process():
+ while True:
+  continue
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "continue",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

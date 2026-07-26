@@ -203,6 +203,27 @@ class FormatterEngine(ast.NodeVisitor):
             self.write(
                 "yield"
             )
+            
+            # -------------------------
+    # BREAK
+    # -------------------------
+
+    def visit_Break(self, node):
+
+        self.write(
+            "break"
+        )
+
+
+    # -------------------------
+    # CONTINUE
+    # -------------------------
+
+    def visit_Continue(self, node):
+
+        self.write(
+            "continue"
+        )
     # -------------------------
     # EXPRESSIONS
     # -------------------------

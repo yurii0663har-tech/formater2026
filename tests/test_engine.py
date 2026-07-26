@@ -294,5 +294,19 @@ async def fetch():
             "await request()",
             result
         )
+        
+    def test_lambda_expression(self):
+
+        code = """
+square = lambda x: x * x
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "lambda x: x * x",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
+    

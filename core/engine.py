@@ -204,6 +204,24 @@ class FormatterEngine(ast.NodeVisitor):
                 "yield"
             )
             
+        # -------------------------
+    # ASSERT
+    # -------------------------
+
+    def visit_Assert(self, node):
+
+        if node.msg:
+
+            self.write(
+                f"assert {ast.unparse(node.test)}, {ast.unparse(node.msg)}"
+            )
+
+        else:
+
+            self.write(
+                f"assert {ast.unparse(node.test)}"
+            )
+            
             # -------------------------
     # BREAK
     # -------------------------
@@ -214,7 +232,26 @@ class FormatterEngine(ast.NodeVisitor):
             "break"
         )
 
+        # -------------------------
+    # GLOBAL
+    # -------------------------
 
+    def visit_Global(self, node):
+
+        self.write(
+            f"global {', '.join(node.names)}"
+        )
+
+
+    # -------------------------
+    # NONLOCAL
+    # -------------------------
+
+    def visit_Nonlocal(self, node):
+
+        self.write(
+            f"nonlocal {', '.join(node.names)}"
+        )
     # -------------------------
     # CONTINUE
     # -------------------------

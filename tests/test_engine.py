@@ -492,6 +492,57 @@ def process():
             "continue",
             result
         )
+        
+    def test_assert_statement(self):
+
+        code = """
+def check(value):
+ assert value > 0
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "assert value > 0",
+            result
+        )
+        
+        
+    def test_global_statement(self):
+
+        code = """
+value = 0
+
+def update():
+ global value
+ value = 10
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "global value",
+            result
+        )
+
+
+    def test_nonlocal_statement(self):
+
+        code = """
+def outer():
+ value = 0
+
+ def inner():
+  nonlocal value
+  value = 10
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "nonlocal value",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

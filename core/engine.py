@@ -95,7 +95,31 @@ class FormatterEngine(ast.NodeVisitor):
 
         self.level -= 1
 
+    def visit_AsyncFunctionDef(self, node):
 
+        for decorator in node.decorator_list:
+            self.write(
+                "@" + ast.unparse(decorator)
+            )
+
+        args = ast.unparse(node.args)
+
+        self.write(
+            f"async def {node.name}({args}):"
+        )
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+        
+    def visit_Await(self, node):
+
+        self.write(
+            "await " + ast.unparse(node.value)
+        )
     # -------------------------
     # RETURN
     # -------------------------

@@ -275,5 +275,24 @@ def hello():
             "def hello():",
             result
         )
+        
+    def test_async_function(self):
+
+        code = """
+async def fetch():
+ await request()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "async def fetch():",
+            result
+        )
+
+        self.assertIn(
+            "await request()",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()

@@ -250,5 +250,30 @@ class User:
             result
         )
         
+    def test_multiple_decorators(self):
+
+        code = """
+@staticmethod
+@cache
+def hello():
+ print("Hi")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "@staticmethod",
+            result
+        )
+
+        self.assertIn(
+            "@cache",
+            result
+        )
+
+        self.assertIn(
+            "def hello():",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()

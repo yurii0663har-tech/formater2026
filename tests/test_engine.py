@@ -599,6 +599,34 @@ class User:
             "name: str",
             result
         )
+        
+    def test_function_call_expression(self):
+
+        code = """
+def run():
+ print("hello")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "print('hello')",
+            result
+        )
+        
+    def test_attribute_expression(self):
+
+        code = """
+def show(user):
+ print(user.name)
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "user.name",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

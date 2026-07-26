@@ -865,6 +865,26 @@ def greet(name):
             "f'Hello {name}'",
             result
         )
+        
+    def test_complex_f_string_expression(self):
+
+        code = """
+def info(user, count):
+ message = f"{user.name}: {count + 1}"
+ return message
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "user.name",
+            result
+        )
+
+        self.assertIn(
+            "count + 1",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

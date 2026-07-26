@@ -743,7 +743,22 @@ def choose(flag):
     "no",
     result
 )
-      
+    
+    def test_named_expression(self):
+
+        code = """
+def check(items):
+ if (n := len(items)) > 0:
+  return n
+ return 0
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "n := len(items)",
+            result
+        )  
     def test_subscript_expression(self):
 
         code = """

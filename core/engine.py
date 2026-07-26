@@ -481,6 +481,26 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             ast.unparse(node)
         )
+        
+        # -------------------------
+    # VARIABLE ANNOTATION
+    # -------------------------
+
+    def visit_AnnAssign(self, node):
+
+        target = ast.unparse(node.target)
+        annotation = ast.unparse(node.annotation)
+
+        if node.value:
+            value = ast.unparse(node.value)
+
+            self.write(
+                f"{target}: {annotation} = {value}"
+            )
+        else:
+            self.write(
+                f"{target}: {annotation}"
+            )
     # -------------------------
     # PASS
     # -------------------------

@@ -578,6 +578,27 @@ def add(a: int, b: int) -> int:
             "return a + b",
             result
         )
+    
+    def test_variable_annotations(self):
+
+        code = """
+age: int = 30
+
+class User:
+ name: str
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "age: int = 30",
+            result
+        )
+
+        self.assertIn(
+            "name: str",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

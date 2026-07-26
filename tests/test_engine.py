@@ -920,6 +920,26 @@ def merge(first, second):
             "**second",
             result
         )
+        
+    def test_function_call_unpack_expression(self):
+
+        code = """
+def run(args, options):
+ result = func(*args, **options)
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "*args",
+            result
+        )
+
+        self.assertIn(
+            "**options",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

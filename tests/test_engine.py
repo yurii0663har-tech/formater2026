@@ -559,6 +559,25 @@ async def process(items):
             "async for item in items:",
             result
         )
+        
+    def test_type_annotations(self):
+
+        code = """
+def add(a: int, b: int) -> int:
+ return a + b
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "def add(a: int, b: int) -> int:",
+            result
+        )
+
+        self.assertIn(
+            "return a + b",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

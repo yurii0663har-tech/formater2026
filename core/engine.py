@@ -79,14 +79,18 @@ class FormatterEngine(ast.NodeVisitor):
     # decorators
         for decorator in node.decorator_list:
             self.write(
-                "@" + ast.unparse(decorator)
+                f"@{ast.unparse(decorator)}"
             )
 
         args = ast.unparse(node.args)
 
-        self.write(
-            f"def {node.name}({args}):"
-        )
+        if node.returns:
+            returns = ast.unparse(node.returns)
+            signature = f"def {node.name}({args}) -> {returns}:"
+        else:
+            signature = f"def {node.name}({args}):"
+
+        self.write(signature)
 
         self.level += 1
 

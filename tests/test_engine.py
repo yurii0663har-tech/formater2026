@@ -655,6 +655,21 @@ def check(a, b, c):
             "a and b or c",
             result
         )
+        
+    def test_compare_expression(self):
+
+        code = """
+def check(x, y):
+ if x > 10 and y != 0:
+  return True
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "x > 10 and y != 0",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

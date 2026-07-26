@@ -76,6 +76,12 @@ class FormatterEngine(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
 
+    # decorators
+        for decorator in node.decorator_list:
+            self.write(
+                "@" + ast.unparse(decorator)
+            )
+
         args = ast.unparse(node.args)
 
         self.write(

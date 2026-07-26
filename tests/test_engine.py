@@ -169,6 +169,86 @@ class User:
             "self.name = name",
             result
         )
+    def test_class_inheritance(self):
 
+        code = """
+class User:
+ pass
+
+class Admin(User):
+ pass
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "class User:",
+            result
+        )
+
+        self.assertIn(
+            "class Admin(User):",
+            result
+        )
+
+        self.assertIn(
+            "pass",
+            result
+            
+    
+        )
+        
+    def test_decorator_statement(self):
+
+        code = """
+class User:
+    @staticmethod
+    def hello():
+        print("Hi")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "@staticmethod",
+            result
+            )
+
+        self.assertIn(
+            "def hello():",
+            result
+        )
+
+        self.assertIn(
+            "print('Hi')",
+            result
+        )
+        
+    def test_decorator_statement(self):
+
+        code = """
+class User:
+    @staticmethod
+    def hello():
+        print("Hi")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "@staticmethod",
+            result
+        )
+
+        self.assertIn(
+            "def hello():",
+            result
+        )
+
+        self.assertIn(
+            "print('Hi')",
+            result
+        )
+        
 if __name__ == "__main__":
     unittest.main()

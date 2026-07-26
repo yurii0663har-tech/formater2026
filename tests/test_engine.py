@@ -818,6 +818,38 @@ def create():
             result
         )
  
+    def test_collection_literals(self):
+
+        code = """
+def create():
+ values = [1, 2, 3]
+ point = (10, 20)
+ config = {"debug": True}
+ tags = {"python", "ast"}
+ return values, point, config, tags
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "[1, 2, 3]",
+            result
+        )
+
+        self.assertIn(
+            "(10, 20)",
+            result
+        )
+
+        self.assertIn(
+            "{'debug': True}",
+            result
+        )
+
+        self.assertIn(
+            "{'python', 'ast'}",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

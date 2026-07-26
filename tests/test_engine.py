@@ -625,12 +625,23 @@ def show(user):
 
         self.assertIn(
             "user.name",
+        result
+        )
+    def test_binary_expression(self):
+
+        code = """
+def calc(a, b, c):
+ x = a + b * c
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "a + b * c",
             result
         )
 if __name__ == "__main__":
     unittest.main()
-
-
 
 
 

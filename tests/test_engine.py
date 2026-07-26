@@ -850,6 +850,21 @@ def create():
             "{'python', 'ast'}",
             result
         )
+        
+    def test_f_string_expression(self):
+
+        code = """
+def greet(name):
+ message = f"Hello {name}"
+ return message
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "f'Hello {name}'",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

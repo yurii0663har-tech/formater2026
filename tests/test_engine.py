@@ -307,6 +307,48 @@ square = lambda x: x * x
             "lambda x: x * x",
             result
         )
+        
+    def test_list_comprehension(self):
+
+        code = """
+numbers = [x for x in items]
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "[x for x in items]",
+            result
+        )
+        
+     
+        
+    def test_dict_comprehension(self):
+
+        code = """
+squares = {x: x*x for x in numbers}
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "{x: x * x for x in numbers}",
+            result
+        )
+
+
+    def test_set_comprehension(self):
+
+        code = """
+values = {x for x in numbers}
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "{x for x in numbers}",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
     

@@ -120,6 +120,37 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             "await " + ast.unparse(node.value)
         )
+    
+        # -------------------------
+    # MATCH / CASE
+    # -------------------------
+
+    def visit_Match(self, node):
+
+        self.write(
+            f"match {ast.unparse(node.subject)}:"
+        )
+
+        self.level += 1
+
+        for case in node.cases:
+            self.visit(case)
+
+        self.level -= 1   
+    def visit_match_case(self, node):
+
+        pattern = ast.unparse(node.pattern)
+
+        self.write(
+            f"case {pattern}:"
+        )
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1
     # -------------------------
     # RETURN
     # -------------------------

@@ -336,6 +336,19 @@ squares = {x: x*x for x in numbers}
             result
         )
 
+    def test_set_comprehension(self):
+
+        code = """
+values = {x for x in numbers}
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "{x for x in numbers}",
+            result
+        )
+
 
     def test_set_comprehension(self):
 
@@ -349,6 +362,83 @@ values = {x for x in numbers}
             "{x for x in numbers}",
             result
         )
+
+
+    def test_match_statement(self):
+
+        code = """
+def check(value):
+ match value:
+  case 1:
+   print("one")
+  case _:
+   print("other")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "match value:",
+            result
+        )
+
+        self.assertIn(
+            "case 1:",
+            result
+        )
+
+        self.assertIn(
+            "case _:",
+            result
+        )
+
+      
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "{x for x in numbers}",
+            result
+        )
+
+
+    
+
+
+    def test_match_statement(self):
+
+        code = """
+def check(value):
+ match value:
+  case 1:
+   print("one")
+  case _:
+   print("other")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "match value:",
+            result
+        )
+
+        self.assertIn(
+            "case 1:",
+            result
+        )
+
+        self.assertIn(
+            "case _:",
+            result
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
+
+
+
     

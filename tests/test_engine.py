@@ -736,7 +736,27 @@ def get(items, user):
             "user['name']",
             result
         )
-        
+    
+    def test_subscript_expression(self):
+
+        code = """
+def get(items, user):
+ value = items[0]
+ name = user["name"]
+ return value, name
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "items[0]",
+            result
+        )
+
+        self.assertIn(
+            "user['name']",
+            result
+        )    
 if __name__ == "__main__":
     unittest.main()
 

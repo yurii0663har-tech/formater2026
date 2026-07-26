@@ -756,6 +756,33 @@ def get(items, user):
         self.assertIn(
             "user['name']",
             result
+        )
+        
+    def test_slice_expression(self):
+
+        code = """
+def get(items):
+ first = items[1:5]
+ second = items[:10]
+ third = items[::2]
+ return first, second, third
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "items[1:5]",
+            result
+        )
+
+        self.assertIn(
+            "items[:10]",
+            result
+        )
+
+        self.assertIn(
+            "items[::2]",
+            result
         )    
 if __name__ == "__main__":
     unittest.main()

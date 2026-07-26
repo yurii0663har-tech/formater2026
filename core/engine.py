@@ -168,6 +168,41 @@ class FormatterEngine(ast.NodeVisitor):
             self.write("return")
 
 
+        # -------------------------
+    # RAISE
+    # -------------------------
+
+    def visit_Raise(self, node):
+
+        if node.exc:
+
+            self.write(
+                f"raise {ast.unparse(node.exc)}"
+            )
+
+        else:
+
+            self.write(
+                "raise"
+            )
+            
+            # -------------------------
+    # YIELD
+    # -------------------------
+
+    def visit_Yield(self, node):
+
+        if node.value:
+
+            self.write(
+                f"yield {ast.unparse(node.value)}"
+            )
+
+        else:
+
+            self.write(
+                "yield"
+            )
     # -------------------------
     # EXPRESSIONS
     # -------------------------

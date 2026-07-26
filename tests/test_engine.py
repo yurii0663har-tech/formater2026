@@ -434,6 +434,33 @@ def check(value):
         )
 
 
+    def test_raise_statement(self):
+
+        code = """
+def fail():
+ raise ValueError("error")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "raise ValueError('error')",
+            result
+        )
+        
+    def test_yield_statement(self):
+
+        code = """
+def numbers():
+ yield 1
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "yield 1",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

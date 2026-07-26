@@ -690,6 +690,32 @@ def check(value):
             "-value",
             result
         )
+        
+    def test_if_expression(self):
+
+        code = """
+def choose(flag):
+ result = "yes" if flag else "no"
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+    "yes",
+        result
+)
+
+        self.assertIn(
+    "if flag else",
+        result
+)
+
+        self.assertIn(
+    "no",
+    result
+)
+        
 if __name__ == "__main__":
     unittest.main()
 

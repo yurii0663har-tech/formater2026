@@ -640,6 +640,21 @@ def calc(a, b, c):
             "a + b * c",
             result
         )
+        
+    def test_boolean_expression(self):
+
+        code = """
+def check(a, b, c):
+ if a and b or c:
+  print("yes")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "a and b or c",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

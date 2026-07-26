@@ -900,6 +900,26 @@ def expand(items):
             "*items",
             result
         )
+        
+    def test_dict_unpack_expression(self):
+
+        code = """
+def merge(first, second):
+ result = {**first, **second}
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "**first",
+            result
+        )
+
+        self.assertIn(
+            "**second",
+            result
+        )
 if __name__ == "__main__":
     unittest.main()
 

@@ -899,7 +899,20 @@ P = ParamSpec("P")
             "P = ParamSpec('P')",
             result
         )  
-        
+    def test_typevartuple_statement(self):
+
+        code = """
+from typing import TypeVarTuple
+
+Ts = TypeVarTuple("Ts")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "Ts = TypeVarTuple('Ts')",
+            result
+        )
     def test_annotated_type_annotation(self):
 
         code = """
@@ -1498,8 +1511,22 @@ P = ParamSpec("P")
         "P = ParamSpec('P')",
         result
     )   
-    
+   
+    def test_typevartuple_statement(self):
 
+        code = """
+from typing import TypeVarTuple
+
+Ts = TypeVarTuple("Ts")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "Ts = TypeVarTuple('Ts')",
+            result
+        )
+   
 if __name__ == "__main__":
     unittest.main()
 

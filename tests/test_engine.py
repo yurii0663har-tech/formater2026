@@ -883,7 +883,23 @@ T = TypeVar("T")
         self.assertIn(
             "T = TypeVar('T')",
             result
-        )   
+        ) 
+        
+    def test_paramspec_statement(self):
+
+        code = """
+from typing import ParamSpec
+
+P = ParamSpec("P")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "P = ParamSpec('P')",
+            result
+        )  
+        
     def test_annotated_type_annotation(self):
 
         code = """
@@ -1467,7 +1483,23 @@ def process(items: list[int], mapping: dict[str, int]) -> tuple[int, ...]:
         "-> tuple[int, ...]",
         result
     )    
-        
+
+
+
+    code = """
+from typing import ParamSpec
+
+P = ParamSpec("P")
+"""
+
+    result = self.formatter.format(code)
+
+    self.assertIn(
+        "P = ParamSpec('P')",
+        result
+    )   
+    
+
 if __name__ == "__main__":
     unittest.main()
 

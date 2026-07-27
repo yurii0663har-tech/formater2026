@@ -869,6 +869,27 @@ def add(a: int, b: int) -> int:
             "return a + b",
             result
         )
+        
+    def test_annotated_type_annotation(self):
+
+        code = """
+from typing import Annotated
+
+def user_id(value: Annotated[int, "positive"]) -> int:
+    return value
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+    "value: Annotated[int, 'positive']",
+        result
+)
+
+        self.assertIn(
+            "-> int:",
+            result
+        )   
     def test_callable_type_annotation(self):
 
         code = """

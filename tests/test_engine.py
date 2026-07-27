@@ -175,6 +175,20 @@ def read_file():
             result
         )
         
+    def test_multiple_with_statement(self):
+
+        code = """
+def copy():
+    with open("a.txt") as a, open("b.txt") as b:
+        data = a.read()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "with open('a.txt') as a, open('b.txt') as b:",
+            result
+        )
 
     
     def test_class_statement(self):

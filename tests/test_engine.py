@@ -1318,6 +1318,45 @@ def handle():
         "except* ValueError:",
             result
         ) 
+        
+    def test_union_type_annotation(self):
+
+        code = """
+def parse(value: int | str) -> int | None:
+    return None
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "def parse(value: int | str) -> int | None:",
+            result
+    )
+        
+def test_generic_type_annotations(self):
+
+    code = """
+def process(items: list[int], mapping: dict[str, int]) -> tuple[int, ...]:
+    return (1,)
+"""
+
+    result = self.formatter.format(code)
+
+    self.assertIn(
+        "items: list[int]",
+        result
+    )
+
+    self.assertIn(
+        "mapping: dict[str, int]",
+        result
+    )
+
+    self.assertIn(
+        "-> tuple[int, ...]",
+        result
+    )    
+        
 if __name__ == "__main__":
     unittest.main()
 

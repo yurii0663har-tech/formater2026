@@ -174,6 +174,21 @@ def read_file():
             "print(file.read())",
             result
         )
+    def test_with_without_as_statement(self):
+
+        code = """
+def read():
+    with open("file.txt"):
+        process()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "with open('file.txt'):",
+            result
+        ) 
+     
         
     def test_multiple_with_statement(self):
 

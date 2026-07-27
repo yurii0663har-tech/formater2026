@@ -870,6 +870,20 @@ def add(a: int, b: int) -> int:
             result
         )
         
+    def test_typevar_statement(self):
+
+        code = """
+from typing import TypeVar
+
+T = TypeVar("T")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "T = TypeVar('T')",
+            result
+        )   
     def test_annotated_type_annotation(self):
 
         code = """

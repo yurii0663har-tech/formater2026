@@ -96,6 +96,30 @@ def load():
         self.assertIn("except Exception:", result)
         self.assertIn("print('error')", result)
 
+    def test_multiple_except(self):
+
+        code = """
+def handle():
+    try:
+        work()
+    except ValueError:
+        handle_value()
+    except Exception:
+        handle_other()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "except ValueError:",
+            result
+        )
+
+        self.assertIn(
+            "except Exception:",
+            result
+        )
+
     def test_try_except_else(self):
 
         code = """

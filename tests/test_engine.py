@@ -187,7 +187,22 @@ async def read():
         self.assertIn(
             "async with open_async('file.txt'):",
             result
-        )    
+        )  
+        
+    def test_multiple_async_with_statement(self):
+
+        code = """
+async def load():
+    async with open_async("a.txt") as a, open_async("b.txt") as b:
+        data = await a.read()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "async with open_async('a.txt') as a, open_async('b.txt') as b:",
+            result
+        )
         
     def test_with_without_as_statement(self):
 

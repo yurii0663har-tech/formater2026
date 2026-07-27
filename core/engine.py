@@ -491,14 +491,21 @@ class FormatterEngine(ast.NodeVisitor):
 
     def visit_AsyncWith(self, node):
 
-        item = node.items[0]
+        parts = []
 
-        expression = ast.unparse(
-            item.context_expr
-        )
+        for item in node.items:
+
+            expression = ast.unparse(item.context_expr)
+
+            if item.optional_vars:
+                expression += (
+                    f" as {ast.unparse(item.optional_vars)}"
+            )
+
+            parts.append(expression)
 
         self.write(
-            f"async with {expression}:"
+            f"async with {', '.join(parts)}:"
         )
 
         self.level += 1

@@ -889,7 +889,28 @@ def user_id(value: Annotated[int, "positive"]) -> int:
         self.assertIn(
             "-> int:",
             result
-        )   
+        ) 
+        
+    def test_literal_type_annotation(self):
+
+        code = """
+from typing import Literal
+
+def status(value: Literal["ok", "error"]) -> str:
+    return value
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "value: Literal['ok', 'error']",
+            result
+        )
+
+        self.assertIn(
+            "-> str:",
+            result
+        )     
     def test_callable_type_annotation(self):
 
         code = """

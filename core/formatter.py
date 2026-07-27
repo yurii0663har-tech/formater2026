@@ -20,37 +20,15 @@ class PythonFormatter:
         lines = code.splitlines()
 
         result = []
-        indent = 0
 
         for line in lines:
-
-            stripped = line.strip()
-
-            if not stripped:
+            if not line.strip():
                 result.append("")
                 continue
 
-
-            # уменьшение уровня перед блоками
-            if stripped.startswith(
-                ("elif ", "else:", "except", "finally:")
-            ):
-                indent -= 1
-
-
-            result.append(
-                " " * (indent * self.indent_size)
-                + stripped
-            )
-
-
-            # увеличение после :
-            if stripped.endswith(":"):
-                indent += 1
-
+            result.append(line.rstrip())
 
         return "\n".join(result)
-
 
     def clean_spaces(self, code):
 

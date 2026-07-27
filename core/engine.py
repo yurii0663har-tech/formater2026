@@ -9,6 +9,14 @@ class FormatterEngine(ast.NodeVisitor):
         self.lines = []
 
 
+    #def format(self, tree):
+
+        #self.lines = []
+        #self.level = 0
+
+        #self.visit(tree)
+
+        #return "\n".join(self.lines)
     def format(self, tree):
 
         self.lines = []
@@ -17,7 +25,6 @@ class FormatterEngine(ast.NodeVisitor):
         self.visit(tree)
 
         return "\n".join(self.lines)
-
 
     def write(self, text):
 
@@ -96,7 +103,8 @@ class FormatterEngine(ast.NodeVisitor):
 
         for item in node.body:
             self.visit(item)
-
+        
+            
         self.level -= 1
 
     def visit_AsyncFunctionDef(self, node):
@@ -164,7 +172,8 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
 
     def visit_Return(self, node):
-
+       
+    
         if node.value:
 
             self.write(
@@ -290,6 +299,9 @@ class FormatterEngine(ast.NodeVisitor):
 
     def visit_If(self, node):
 
+        
+        
+
         self.write(
             f"if {ast.unparse(node.test)}:"
         )
@@ -299,8 +311,12 @@ class FormatterEngine(ast.NodeVisitor):
         for item in node.body:
             self.visit(item)
 
-        self.level -= 1
+        
 
+        self.level -= 1
+        
+        
+        
 
         if node.orelse:
 
@@ -331,7 +347,15 @@ class FormatterEngine(ast.NodeVisitor):
 
         self.level -= 1
 
+        if node.orelse:
+            self.write("else:")
 
+            self.level += 1
+
+            for item in node.orelse:
+                self.visit(item)
+
+            self.level -= 1
         # -------------------------
     # ASYNC FOR
     # -------------------------
@@ -354,7 +378,6 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
     # WHILE
     # -------------------------
-
     def visit_While(self, node):
 
         self.write(
@@ -369,6 +392,15 @@ class FormatterEngine(ast.NodeVisitor):
         self.level -= 1
 
 
+        if node.orelse:
+            self.write("else:")
+
+            self.level += 1
+
+            for item in node.orelse:
+                self.visit(item)
+
+            self.level -= 1
     # -------------------------
     # TRY
     # -------------------------
@@ -596,6 +628,21 @@ class FormatterEngine(ast.NodeVisitor):
 
         self.write(
             f"type {name} = {value}"
+        )
+        
+    def test_typevar_statement(self):
+
+        code = """
+from typing import TypeVar
+
+T = TypeVar("T")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "T = TypeVar('T')",
+            result
         )
     # -------------------------
     # PASS

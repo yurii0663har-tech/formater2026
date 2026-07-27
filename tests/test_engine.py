@@ -1,5 +1,8 @@
 import unittest
 
+import ast
+
+
 from core.pipeline import FormatterPipeline
 
 
@@ -869,6 +872,43 @@ def add(a: int, b: int) -> int:
             "return a + b",
             result
         )
+    def test_ast_equivalence(self):
+        
+        self.maxDiff = None
+        
+        code = """
+def add(a: int, b: int) -> int:
+    if a > b:
+        return a
+    return b
+"""
+
+        
+        
+        formatted = self.formatter.format(code)
+
+      
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+    
+        
+
+      
+
+    
+    
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
         
     def test_typevar_statement(self):
 
@@ -1139,26 +1179,7 @@ def check(items):
             "n := len(items)",
             result
         )  
-    def test_subscript_expression(self):
-
-        code = """
-def get(items, user):
- value = items[0]
- name = user["name"]
- return value, name
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "items[0]",
-            result
-        )
-
-        self.assertIn(
-            "user['name']",
-            result
-        )
+    
     
     def test_subscript_expression(self):
 
@@ -1241,38 +1262,7 @@ def create():
             result
         )
  
-    def test_collection_literals(self):
-
-        code = """
-def create():
- values = [1, 2, 3]
- point = (10, 20)
- config = {"debug": True}
- tags = {"python", "ast"}
- return values, point, config, tags
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "[1, 2, 3]",
-            result
-        )
-
-        self.assertIn(
-            "(10, 20)",
-            result
-        )
-
-        self.assertIn(
-            "{'debug': True}",
-            result
-        )
-
-        self.assertIn(
-            "{'python', 'ast'}",
-            result
-        )
+   
         
     def test_f_string_expression(self):
 
@@ -1364,32 +1354,7 @@ def run(args, options):
             result
         )
         
-    def test_slice_expression(self):
-
-        code = """
-def cut(items):
- first = items[1:5]
- second = items[:10]
- third = items[::2]
- return first, second, third
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "items[1:5]",
-            result
-        )
-
-        self.assertIn(
-            "items[:10]",
-            result
-        )
-
-        self.assertIn(
-            "items[::2]",
-            result
-        )
+   
         
     def test_del_statement(self):
 
@@ -1449,6 +1414,7 @@ def parse(value: int | str) -> int | None:
         "def parse(value: int | str) -> int | None:",
             result
     )
+      
     def test_generic_type_annotations(self):
 
         code = """
@@ -1459,57 +1425,33 @@ def process(items: list[int], mapping: dict[str, int]) -> tuple[int, ...]:
         result = self.formatter.format(code)
 
         self.assertIn(
-            "items: list[int]",
-            result
-        )
-
-        self.assertIn(
-            "mapping: dict[str, int]",
-            result
-        )
-
-        self.assertIn(
-            "-> tuple[int, ...]",
-            result
-        )
-        
-def test_generic_type_annotations(self):
-
-    code = """
-def process(items: list[int], mapping: dict[str, int]) -> tuple[int, ...]:
-    return (1,)
-"""
-
-    result = self.formatter.format(code)
-
-    self.assertIn(
         "items: list[int]",
-        result
+            result
     )
 
-    self.assertIn(
+        self.assertIn(
         "mapping: dict[str, int]",
-        result
+            result
     )
 
-    self.assertIn(
+        self.assertIn(
         "-> tuple[int, ...]",
-        result
+            result
     )    
 
 
 
-    code = """
+        code = """
 from typing import ParamSpec
 
 P = ParamSpec("P")
 """
 
-    result = self.formatter.format(code)
+        result = self.formatter.format(code)
 
-    self.assertIn(
+        self.assertIn(
         "P = ParamSpec('P')",
-        result
+            result
     )   
    
     def test_typevartuple_statement(self):
@@ -1526,9 +1468,206 @@ Ts = TypeVarTuple("Ts")
             "Ts = TypeVarTuple('Ts')",
             result
         )
-   
-if __name__ == "__main__":
-    unittest.main()
+    def test_nested_if_for_ast_equivalence(self):
+
+        code = """
+def process(items):
+    for item in items:
+        if item:
+            return item
+    return None
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+    def test_if_elif_else_ast_equivalence(self):
+
+        code = """
+def grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 75:
+        return "B"
+    else:
+        return "C"
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+        
+    def find(items):
+        for item in items:
+            if item:
+                return item
+        else:
+            return None 
+    def test_for_else_ast_equivalence(self):
+
+        code = """
+def find(items):
+    for item in items:
+        if item:
+            return item
+    else:
+        return None
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )  
+    
+    def test_while_else_ast_equivalence(self):
+
+        code = """
+def search(items):
+    while items:
+        item = items.pop()
+        if item:
+            break
+    else:
+        return None
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+        
+    def test_try_except_else_finally_ast_equivalence(self):
+
+        code = """
+def load():
+    try:
+        value = read()
+    except Exception:
+        return None
+    else:
+        return value
+    finally:
+        cleanup()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        ) 
+        
+    def test_with_statement_ast_equivalence(self):
+
+        code = """
+def read_file():
+    with open("data.txt") as f:
+        return f.read()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )  
+        
+    def test_multiple_with_statement_ast_equivalence(self):
+
+        code = """
+def copy_files():
+    with open("a.txt") as a, open("b.txt") as b:
+        return a.read()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )      
+    if __name__ == "__main__":
+        unittest.main()
 
 
 

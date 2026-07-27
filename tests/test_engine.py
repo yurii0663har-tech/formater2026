@@ -869,6 +869,26 @@ def add(a: int, b: int) -> int:
             "return a + b",
             result
         )
+    def test_callable_type_annotation(self):
+
+        code = """
+from collections.abc import Callable
+
+def execute(callback: Callable[[int, str], bool]) -> bool:
+    return callback(1, "test")
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "callback: Callable[[int, str], bool]",
+            result
+        )
+
+        self.assertIn(
+            "-> bool:",
+            result
+        )
     
     def test_variable_annotations(self):
 

@@ -1665,7 +1665,81 @@ def copy_files():
         self.assertEqual(
             original_ast,
             formatted_ast
-        )      
+        )
+        
+    def test_async_function_ast_equivalence(self):
+
+        code = """
+async def fetch():
+    return await get_data()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )  
+        
+    def test_async_for_ast_equivalence(self):
+
+        code = """
+async def process(items):
+    async for item in items:
+        return item
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+        
+    def test_async_with_ast_equivalence(self):
+
+        code = """
+async def load():
+    async with session.get("/") as response:
+        return await response.text()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )                
     if __name__ == "__main__":
         unittest.main()
 

@@ -96,8 +96,40 @@ def load():
         self.assertIn("except Exception:", result)
         self.assertIn("print('error')", result)
 
+    def test_try_except_else(self):
 
+        code = """
+def check():
+    try:
+        value = 1
+    except Exception:
+        handle()
+    else:
+        success()
+"""
 
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "else:",
+            result
+        )
+    def test_except_star_with_name(self):
+
+        code = """
+def handle():
+    try:
+        risky()
+    except* ValueError as e:
+        print(e)
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "except* ValueError as e:",
+            result
+    )
     
     def test_with_statement(self):
 
@@ -402,9 +434,95 @@ def check(value):
         )
 
 
+    def test_complex_match_patterns(self):
+
+        code = """
+def parse(value):
+ match value:
+    case [a, b]:
+        return a + b
+    case {"name": name}:
+        return name
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "case [a, b]:",
+            result
+        )
+
+        self.assertIn(
+            "{'name': name}",
+            result
+        )
     
+    def test_match_or_pattern(self):
 
+        code = """
+def check(value):
+ match value:
+  case 1 | 2:
+   return "small"
+  case _:
+   return "other"
+"""
 
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "case 1 | 2:",
+            result
+        )
+    def test_match_as_pattern(self):
+
+        code = """
+def parse(value):
+ match value:
+  case [x, y] as pair:
+   return pair
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "case [x, y] as pair:",
+            result
+        )
+    
+    def test_match_class_pattern(self):
+
+        code = """
+def parse(value):
+ match value:
+  case Point(x, y):
+   return x + y
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "case Point(x, y):",
+            result
+        )
+        
+    def test_match_guard_pattern(self):
+
+        code = """
+def check(value):
+ match value:
+  case x if x > 0:
+   return "positive"
+  case _:
+   return "other"
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "case x if x > 0:",
+            result
+        )
     def test_match_statement(self):
 
         code = """
@@ -447,7 +565,53 @@ def fail():
             "raise ValueError('error')",
             result
         )
-        
+       
+    def test_raise_from_statement(self):
+
+        code = """
+def fail():
+    try:
+        work()
+    except Exception as e:
+        raise RuntimeError("failed") from e
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "raise RuntimeError('failed') from e",
+            result
+        )
+
+    def test_await_expression(self):
+
+        code = """
+async def load():
+ result = await fetch()
+ return result
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "await fetch()",
+            result
+        )    
+
+        code = """
+def fail():
+    try:
+        work()
+    except Exception as e:
+        raise RuntimeError("failed") from e
+"""
+
+        result = self.formatter.format(code)
+  
+        self.assertIn(
+        "raise RuntimeError('failed') from e",
+            result
+    ) 
     def test_await_expression(self):
 
         code = """
@@ -553,7 +717,23 @@ def update():
             result
         )
 
+    def test_nonlocal_statement(self):
 
+        code = """
+def outer():
+    value = 1
+
+    def inner():
+        nonlocal value
+        value = 2
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "nonlocal value",
+        result
+    )
 
 
 
@@ -1010,6 +1190,51 @@ def cut(items):
             "items[::2]",
             result
         )
+        
+    def test_del_statement(self):
+
+        code = """
+def remove(items):
+ del items[0]
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "del items[0]",
+            result
+        ) 
+        
+    def test_assert_with_message(self):
+
+        code = """
+def check(value):
+ assert value, "invalid value"
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "assert value, 'invalid value'",
+            result
+        )  
+        
+    def test_except_star_statement(self):
+
+        code = """
+def handle():
+ try:
+  risky()
+ except* ValueError:
+  pass
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "except* ValueError:",
+            result
+        ) 
 if __name__ == "__main__":
     unittest.main()
 

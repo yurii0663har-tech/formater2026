@@ -124,7 +124,25 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             "await " + ast.unparse(node.value)
         )
-    
+    def visit_match_case(self, node):
+
+        pattern = ast.unparse(node.pattern)
+
+        if node.guard:
+            self.write(
+                f"case {pattern} if {ast.unparse(node.guard)}:"
+            )
+        else:
+            self.write(
+                f"case {pattern}:"
+            )
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1
         # -------------------------
     # MATCH / CASE
     # -------------------------
@@ -140,22 +158,8 @@ class FormatterEngine(ast.NodeVisitor):
         for case in node.cases:
             self.visit(case)
 
-        self.level -= 1   
-    def visit_match_case(self, node):
-
-        pattern = ast.unparse(node.pattern)
-
-        self.write(
-            f"case {pattern}:"
-        )
-
-        self.level += 1
-
-        for stmt in node.body:
-            self.visit(stmt)
-
-        self.level -= 1
-    # -------------------------
+            self.level -= 1   
+    
     # RETURN
     # -------------------------
 
@@ -171,7 +175,13 @@ class FormatterEngine(ast.NodeVisitor):
 
             self.write("return")
 
+    def visit_Delete(self, node):
+        targets = ", ".join(
+            ast.unparse(target)
+            for target in node.targets
+        )
 
+        self.write(f"del {targets}")
         # -------------------------
     # RAISE
     # -------------------------
@@ -179,16 +189,14 @@ class FormatterEngine(ast.NodeVisitor):
     def visit_Raise(self, node):
 
         if node.exc:
-
-            self.write(
-                f"raise {ast.unparse(node.exc)}"
-            )
-
+            text = f"raise {ast.unparse(node.exc)}"
         else:
+            text = "raise"
 
-            self.write(
-                "raise"
-            )
+        if node.cause:
+            text += f" from {ast.unparse(node.cause)}"
+
+        self.write(text)
             
             # -------------------------
     # YIELD
@@ -364,7 +372,6 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
     # TRY
     # -------------------------
-
     def visit_Try(self, node):
 
         self.write("try:")
@@ -379,13 +386,30 @@ class FormatterEngine(ast.NodeVisitor):
 
         for handler in node.handlers:
 
-            self.write(
-                f"except {ast.unparse(handler.type)}:"
-            )
+            text = f"except {ast.unparse(handler.type)}"
+
+            if handler.name:
+                text += f" as {handler.name}"
+
+            text += ":"
+
+            self.write(text)
 
             self.level += 1
 
             for item in handler.body:
+                self.visit(item)
+
+            self.level -= 1
+
+
+        if node.orelse:
+
+            self.write("else:")
+
+            self.level += 1
+
+            for item in node.orelse:
                 self.visit(item)
 
             self.level -= 1
@@ -401,30 +425,10 @@ class FormatterEngine(ast.NodeVisitor):
                 self.visit(item)
 
             self.level -= 1
+            
+    def visit_TryStar(self, node):
 
-
-    # -------------------------
-    # WITH
-    # -------------------------
-
-    def visit_With(self, node):
-
-        items = []
-
-        for item in node.items:
-
-            text = ast.unparse(item.context_expr)
-
-            if item.optional_vars:
-
-                text += f" as {ast.unparse(item.optional_vars)}"
-
-            items.append(text)
-
-
-        self.write(
-            f"with {', '.join(items)}:"
-        )
+        self.write("try:")
 
         self.level += 1
 
@@ -432,6 +436,54 @@ class FormatterEngine(ast.NodeVisitor):
             self.visit(item)
 
         self.level -= 1
+
+
+        for handler in node.handlers:
+  
+            text = f"except* {ast.unparse(handler.type)}"
+
+            if handler.name:
+                text += f" as {handler.name}"
+
+            text += ":"
+
+            self.write(text)
+
+            self.level += 1
+
+        for item in handler.body:
+            self.visit(item)
+
+            self.level -= 1
+
+    def visit_TryStar(self, node):
+
+        self.write("try:")
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+
+        for handler in node.handlers:
+
+            text = f"except* {ast.unparse(handler.type)}"
+
+            if handler.name:
+                text += f" as {handler.name}"
+
+            text += ":"
+
+            self.write(text)
+
+            self.level += 1
+
+            for item in handler.body:
+                self.visit(item)
+
+            self.level -= 1
 
         # -------------------------
     # ASYNC WITH
@@ -448,6 +500,29 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             f"async with {expression}:"
         )
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1
+        
+    def visit_With(self, node):
+
+        expressions = []
+
+        for item in node.items:
+            expression = ast.unparse(item.context_expr)
+
+            if item.optional_vars:
+                expression += f" as {ast.unparse(item.optional_vars)}"
+
+            expressions.append(expression)
+
+        self.write(
+            f"with {', '.join(expressions)}:"
+    )
 
         self.level += 1
 

@@ -174,6 +174,21 @@ def read_file():
             "print(file.read())",
             result
         )
+    def test_async_with_without_as_statement(self):
+
+        code = """
+async def read():
+    async with open_async("file.txt"):
+        process()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "async with open_async('file.txt'):",
+            result
+        )    
+        
     def test_with_without_as_statement(self):
 
         code = """

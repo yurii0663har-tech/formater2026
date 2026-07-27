@@ -932,6 +932,18 @@ def execute(callback: Callable[[int, str], bool]) -> bool:
             result
         )
     
+    def test_type_alias_statement(self):
+
+        code = """
+type UserId = int
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+            "type UserId = int",
+            result
+        )
     def test_variable_annotations(self):
 
         code = """

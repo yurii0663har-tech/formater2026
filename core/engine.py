@@ -583,6 +583,20 @@ class FormatterEngine(ast.NodeVisitor):
             self.write(
                 f"{target}: {annotation}"
             )
+            
+        # -------------------------
+    # TYPE ALIAS
+    # -------------------------
+
+    def visit_TypeAlias(self, node):
+
+        name = ast.unparse(node.name)
+
+        value = ast.unparse(node.value)
+
+        self.write(
+            f"type {name} = {value}"
+        )
     # -------------------------
     # PASS
     # -------------------------

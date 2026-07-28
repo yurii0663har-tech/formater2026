@@ -2183,7 +2183,45 @@ def hello(name):
         self.assertEqual(
             formatted_once,
             formatted_twice
-        )                                  
+        )
+    def test_formatter_idempotency_nested_blocks(self):
+
+        code = """
+def process(items):
+    for item in items:
+        if item:
+            return item
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )   
+    def test_formatter_idempotency_async_function(self):
+
+        code = """
+async def fetch(client):
+    data = await client.get()
+    return data
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+    )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )
+                                          
 if __name__ == "__main__":
         unittest.main()
 

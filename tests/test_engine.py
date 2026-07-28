@@ -2349,7 +2349,123 @@ def build(values):
         self.assertEqual(
             formatted_once,
             formatted_twice
-        )                                          
+        )  
+    def test_formatter_integration_complex_module(self):
+
+        code = """
+import asyncio
+
+
+class Worker:
+
+    def __init__(self, items):
+        self.items = items
+
+    async def process(self):
+        results = []
+
+        for item in self.items:
+            if item:
+                results.append(item)
+
+        return results
+
+
+async def main():
+    worker = Worker([1, 2, 3])
+    return await worker.process()
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted_once),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )    
+    def test_formatter_integration_advanced_module(self):
+
+        code = """
+from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+
+T = TypeVar("T")
+
+
+@dataclass
+class Box(Generic[T]):
+
+    value: T
+
+    def get(self) -> T:
+        return self.value
+
+
+def process(items: list[int]) -> dict[int, int]:
+
+    result = {
+        item: item * 2
+        for item in items
+        if item > 0
+    }
+
+    return result
+
+
+def handle(value):
+
+    match value:
+        case 0:
+            return "zero"
+        case _:
+            return "other"
+"""
+
+        formatted_once = self.formatter.format(code)
+        print(formatted_once)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted_once),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )                                           
 if __name__ == "__main__":
         unittest.main()
 

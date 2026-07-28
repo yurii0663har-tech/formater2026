@@ -52,7 +52,11 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
 
     def visit_ClassDef(self, node):
-
+        # decorators
+        for decorator in node.decorator_list:
+            self.write(
+                f"@{ast.unparse(decorator)}"
+                )
         if node.bases:
 
             bases = ", ".join(

@@ -1793,7 +1793,101 @@ def classify(value):
         self.assertEqual(
             original_ast,
             formatted_ast
-        )            
+        ) 
+        
+    def test_list_comprehension_ast_equivalence(self):
+
+        code = """
+def squares(items):
+    return [x * x for x in items]
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+        ast.parse(code),
+        include_attributes=False
+    )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        ) 
+    def test_set_comprehension_ast_equivalence(self):
+
+        code = """
+def unique(items):
+    return {x for x in items}
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )   
+    def test_dict_comprehension_ast_equivalence(self):
+
+        code = """
+def mapping(items):
+    return {x: x * x for x in items}
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        ) 
+        
+    def test_generator_expression_ast_equivalence(self):
+
+        code = """
+def stream(items):
+    return (x * x for x in items)
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )                    
     if __name__ == "__main__":
         unittest.main()
 

@@ -2465,7 +2465,39 @@ def handle(value):
         self.assertEqual(
             formatted_once,
             formatted_twice
-        )                                           
+        )
+    def test_self_host_engine_module(self):
+
+        from pathlib import Path
+
+        path = Path("core/engine.py")
+
+        code = path.read_text(encoding="utf-8")
+
+        formatted_once = self.formatter.format(code)
+        
+        from pathlib import Path
+
+        Path("engine_formatted.py").write_text(
+            formatted_once,
+            encoding="utf-8",
+) 
+        #formatted_twice = self.formatter.format(formatted_once)
+
+       # original_ast = ast.dump(
+            #ast.parse(code),
+            #include_attributes=False,
+       #)
+
+        #formatted_ast = ast.dump(
+            #ast.parse(formatted_once),
+            #include_attributes=False,
+       #)
+
+        #self.assertEqual(original_ast, formatted_ast)
+        #self.assertEqual(formatted_once, formatted_twice)   
+        
+                                                   
 if __name__ == "__main__":
         unittest.main()
 

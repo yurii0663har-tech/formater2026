@@ -139,16 +139,14 @@ class FormatterEngine(ast.NodeVisitor):
     def visit_match_case(self, node):
 
         pattern = ast.unparse(node.pattern)
+        line = f"case {pattern}"
 
         if node.guard:
-            self.write(
-                f"case {pattern} if {ast.unparse(node.guard)}:"
-            )
-        else:
-            self.write(
-                f"case {pattern}:"
-            )
+            line += f" if {ast.unparse(node.guard)}"
 
+        line += ":"
+        self.write(line)
+    
         self.level += 1
 
         for stmt in node.body:
@@ -173,25 +171,6 @@ class FormatterEngine(ast.NodeVisitor):
         self.level -= 1
 
 
-    def visit_match_case(self, node):
-
-        pattern = ast.unparse(node.pattern)
-
-        line = f"case {pattern}"
-
-        if node.guard:
-            line += f" if {ast.unparse(node.guard)}"
-
-        line += ":"
-
-        self.write(line)
-
-        self.level += 1
-
-        for stmt in node.body:
-            self.visit(stmt)
-
-        self.level -= 1  
     
     # RETURN
     # -------------------------
@@ -483,35 +462,7 @@ class FormatterEngine(ast.NodeVisitor):
 
             self.level -= 1
             
-    def visit_TryStar(self, node):
-
-        self.write("try:")
-
-        self.level += 1
-
-        for item in node.body:
-            self.visit(item)
-
-        self.level -= 1
-
-
-        for handler in node.handlers:
-  
-            text = f"except* {ast.unparse(handler.type)}"
-
-            if handler.name:
-                text += f" as {handler.name}"
-
-            text += ":"
-
-            self.write(text)
-
-            self.level += 1
-
-        for item in handler.body:
-            self.visit(item)
-
-            self.level -= 1
+    
 
     def visit_TryStar(self, node):
 
@@ -655,20 +606,7 @@ class FormatterEngine(ast.NodeVisitor):
             f"type {name} = {value}"
         )
         
-    def test_typevar_statement(self):
-
-        code = """
-from typing import TypeVar
-
-T = TypeVar("T")
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "T = TypeVar('T')",
-            result
-        )
+    
     # -------------------------
     # PASS
     # -------------------------

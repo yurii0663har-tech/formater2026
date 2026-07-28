@@ -2004,7 +2004,77 @@ def sort_items(items):
         self.assertEqual(
             original_ast,
             formatted_ast
-        )                          
+        ) 
+    def test_call_with_star_args_ast_equivalence(self):
+
+        code = """
+def run(args):
+    return execute(*args)
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+       )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )    
+    def test_call_with_kwargs_ast_equivalence(self):
+
+        code = """
+def run(options):
+    return execute(**options)
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+       )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+    ) 
+    def test_call_with_star_and_kwargs_ast_equivalence(self):
+
+        code = """
+def run(args, options):
+    return execute(*args, **options)
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+    )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+    )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+       )    
+                                  
 if __name__ == "__main__":
         unittest.main()
 

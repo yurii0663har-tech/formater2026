@@ -2140,8 +2140,8 @@ def load(user):
     )
 
         self.assertEqual(
-           original_ast,
-           formatted_ast
+            original_ast,
+            formatted_ast
     )
     def test_await_attribute_call_chain_ast_equivalence(self):
 
@@ -2163,10 +2163,27 @@ async def load(client):
         )
 
         self.assertEqual(
-           original_ast,
-           formatted_ast
+            original_ast,
+            formatted_ast
     )   
-                                      
+   
+    def test_formatter_idempotency_simple_function(self):
+
+        code = """
+def hello(name):
+    return "Hello " + name
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )                                  
 if __name__ == "__main__":
         unittest.main()
 

@@ -2074,7 +2074,29 @@ def run(args, options):
             original_ast,
             formatted_ast
        )    
-                                  
+    def test_nested_function_calls_ast_equivalence(self):
+
+        code = """
+def process(value):
+    return outer(inner(value))
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+    )
+
+        formatted_ast = ast.dump(
+        ast.parse(formatted),
+        include_attributes=False
+    )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )                             
 if __name__ == "__main__":
         unittest.main()
 

@@ -2282,7 +2282,23 @@ class User:
             formatted_once,
             formatted_twice
         )
-                                          
+    def test_formatter_idempotency_complex_expression(self):
+
+        code = """
+def calculate(data):
+    return process(data.items[0].value)
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )                                     
 if __name__ == "__main__":
         unittest.main()
 

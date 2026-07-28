@@ -1887,7 +1887,56 @@ def stream(items):
         self.assertEqual(
             original_ast,
             formatted_ast
-        )                    
+        )  
+        
+    def test_yield_statement_ast_equivalence(self):
+
+        code = """
+def numbers():
+    yield 1
+    yield 2
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+    )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+    )  
+    def test_yield_from_ast_equivalence(self):
+
+        code = """
+def flatten(items):
+    yield from items
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )    
+                           
     if __name__ == "__main__":
         unittest.main()
 

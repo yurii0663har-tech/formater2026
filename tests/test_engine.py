@@ -2120,7 +2120,53 @@ def get_name(user):
         self.assertEqual(
             original_ast,
             formatted_ast
-        )                            
+        ) 
+    def test_attribute_call_chain_ast_equivalence(self):
+
+        code = """
+def load(user):
+    return user.profile.get_name().strip()
+"""
+
+        formatted = self.formatter.format(code)
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+        ast.parse(formatted),
+        include_attributes=False
+    )
+
+        self.assertEqual(
+           original_ast,
+           formatted_ast
+    )
+    def test_await_attribute_call_chain_ast_equivalence(self):
+
+        code = """
+async def load(client):
+    return await client.session.fetch()
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+           original_ast,
+           formatted_ast
+    )   
+                                      
 if __name__ == "__main__":
         unittest.main()
 

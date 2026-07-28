@@ -591,7 +591,51 @@ class FormatterEngine(ast.NodeVisitor):
             self.write(
                 f"{target}: {annotation}"
             )
-            
+             # -------------------------
+    # ASSIGN
+    # -------------------------
+
+    def visit_Assign(self, node):
+
+        self.write(
+            ast.unparse(node)
+        )
+
+
+    # -------------------------
+    # AUG ASSIGN
+    # -------------------------
+
+    def visit_AugAssign(self, node):
+
+        target = ast.unparse(node.target)
+        value = ast.unparse(node.value)
+
+        operators = {
+            "Add": "+=",
+            "Sub": "-=",
+            "Mult": "*=",
+            "Div": "/=",
+            "FloorDiv": "//=",
+            "Mod": "%=",
+            "Pow": "**=",
+            "BitAnd": "&=",
+            "BitOr": "|=",
+            "BitXor": "^=",
+            "LShift": "<<=",
+            "RShift": ">>=",
+        }
+
+        op = operators[type(node.op).__name__]
+
+        self.write(
+            f"{target} {op} {value}"
+        )
+
+
+    # -------------------------
+    # VARIABLE ANNOTATION
+    # ------------------------- 
         # -------------------------
     # TYPE ALIAS
     # -------------------------

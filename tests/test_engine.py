@@ -2492,11 +2492,52 @@ def handle(value):
         #formatted_ast = ast.dump(
             #ast.parse(formatted_once),
             #include_attributes=False,
-       #)
+       
 
         #self.assertEqual(original_ast, formatted_ast)
         #self.assertEqual(formatted_once, formatted_twice)   
-        
+    def test_self_host_core_package(self):
+
+        from pathlib import Path
+        import ast
+
+        files = list(Path("core").glob("*.py"))
+
+        for path in files:
+
+            code = path.read_text(encoding="utf-8")
+
+            formatted_once = self.formatter.format(code)
+
+            
+            
+
+            try:
+                formatted_twice = self.formatter.format(formatted_once)
+            except Exception as e:
+                raise AssertionError(f"Failed in {path}") from e
+
+            original_ast = ast.dump(
+                ast.parse(code),
+                include_attributes=False,
+            )
+
+            formatted_ast = ast.dump(
+                ast.parse(formatted_once),
+                include_attributes=False,
+            )
+
+            self.assertEqual(
+                original_ast,
+                formatted_ast,
+                f"AST mismatch in {path}",
+            )
+
+            self.assertEqual(
+                formatted_once,
+                formatted_twice,
+                f"Not idempotent in {path}",
+            )
                                                    
 if __name__ == "__main__":
         unittest.main()

@@ -2242,6 +2242,28 @@ def handle(value):
             formatted_once,
             formatted_twice
         )
+    def test_formatter_idempotency_try_except_finally(self):
+
+        code = """
+def load():
+    try:
+        return read()
+    except Exception:
+        return None
+    finally:
+        close()
+"""
+
+        formatted_once = self.formatter.format(code)
+
+        formatted_twice = self.formatter.format(
+            formatted_once
+        )
+
+        self.assertEqual(
+            formatted_once,
+            formatted_twice
+        )
                                           
 if __name__ == "__main__":
         unittest.main()

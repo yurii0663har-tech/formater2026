@@ -1936,8 +1936,76 @@ def flatten(items):
             original_ast,
             formatted_ast
         )    
-                           
-    if __name__ == "__main__":
+    def test_lambda_multiple_arguments_ast_equivalence(self):
+
+        code = """
+def calculate():
+    return lambda x, y: x + y
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )
+    def test_lambda_default_argument_ast_equivalence(self):
+
+        code = """
+def create():
+    return lambda x=10: x * 2
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+    )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )    
+    def test_lambda_inside_call_ast_equivalence(self):
+
+        code = """
+def sort_items(items):
+    return sorted(items, key=lambda x: x.value)
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )                          
+if __name__ == "__main__":
         unittest.main()
 
 

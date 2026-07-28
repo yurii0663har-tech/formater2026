@@ -2096,7 +2096,31 @@ def process(value):
         self.assertEqual(
             original_ast,
             formatted_ast
-        )                             
+        ) 
+        
+    def test_attribute_chain_ast_equivalence(self):
+
+        code = """
+def get_name(user):
+    return user.profile.account.name
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+            )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )                            
 if __name__ == "__main__":
         unittest.main()
 

@@ -1765,7 +1765,35 @@ async def load():
             formatted_ast
         )    
         
-                
+    def test_match_case_ast_equivalence(self):
+
+        code = """
+def classify(value):
+    match value:
+        case 0:
+            return "zero"
+        case 1:
+            return "one"
+        case _:
+            return "other"
+"""
+
+        formatted = self.formatter.format(code)
+
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False
+        )
+
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False
+        )
+
+        self.assertEqual(
+            original_ast,
+            formatted_ast
+        )            
     if __name__ == "__main__":
         unittest.main()
 

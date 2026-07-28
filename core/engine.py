@@ -166,7 +166,28 @@ class FormatterEngine(ast.NodeVisitor):
         for case in node.cases:
             self.visit(case)
 
-            self.level -= 1   
+        self.level -= 1
+
+
+    def visit_match_case(self, node):
+
+        pattern = ast.unparse(node.pattern)
+
+        line = f"case {pattern}"
+
+        if node.guard:
+            line += f" if {ast.unparse(node.guard)}"
+
+        line += ":"
+
+        self.write(line)
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1  
     
     # RETURN
     # -------------------------

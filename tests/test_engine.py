@@ -2509,13 +2509,18 @@ def handle(value):
 
             formatted_once = self.formatter.format(code)
 
-            
+            from pathlib import Path
+
+        Path(f"debug_{path.stem}.py").write_text(
+        formatted_once,
+        encoding="utf-8",
+    )
             
 
-            try:
-                formatted_twice = self.formatter.format(formatted_once)
-            except Exception as e:
-                raise AssertionError(f"Failed in {path}") from e
+        try:
+            formatted_twice = self.formatter.format(formatted_once)
+        except Exception as e:
+            raise AssertionError(f"Failed in {path}") from e
 
             original_ast = ast.dump(
                 ast.parse(code),
@@ -2538,7 +2543,225 @@ def handle(value):
                 formatted_twice,
                 f"Not idempotent in {path}",
             )
-                                                   
+        def test_list_comprehension(self):
+            code = """
+result = [x * 2 for x in values if x > 0]
+"""
+
+            formatted = self.formatter.format(code)
+
+            self.assertEqual(
+                ast.dump(ast.parse(code), include_attributes=False),
+                ast.dump(ast.parse(formatted), include_attributes=False),
+    ) 
+        def test_list_comprehension(self):
+            code = """
+result = [x * 2 for x in values if x > 0]
+"""
+
+            formatted = self.formatter.format(code)
+
+            original_ast = ast.dump(
+                ast.parse(code),
+                include_attributes=False,
+    )
+
+            formatted_ast = ast.dump(
+                ast.parse(formatted),
+                include_attributes=False,
+    )
+
+            self.assertEqual(
+                original_ast,
+                formatted_ast,
+            )    
+    def test_lambda_expression(self):
+        code = """
+func = lambda x: x + 1
+"""
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )
+    def test_fstring_expression(self):
+        code = '''
+name = "Bob"
+text = f"Hello {name}"
+'''
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+        ast.dump(ast.parse(formatted), include_attributes=False),
+    )
+    def test_fstring_expression(self):
+        code = '''
+name = "Bob"
+text = f"Hello {name}"
+'''
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )
+    def test_complex_function_arguments(self):
+        code = '''
+def func(a: int, b=10, *args, c: str = "x", **kwargs):
+    return a
+'''
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )    
+    def test_multiple_with_items(self):
+        code = '''
+with open("a") as f, open("b") as g:
+    data = f.read()
+'''
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+    )  
+    def test_complex_match_pattern(self):
+        code = '''
+match value:
+    case {"name": name, "age": age}:
+        result = name
+    case [x, y]:
+        result = x + y
+'''
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        ) 
+    def test_self_host_tests_package(self):
+
+        from pathlib import Path
+        import ast
+
+        files = list(Path("tests").glob("*.py"))
+
+        for path in files:
+
+            code = path.read_text(encoding="utf-8")
+
+            formatted_once = self.formatter.format(code)
+            formatted_twice = self.formatter.format(formatted_once)
+
+            original_ast = ast.dump(
+                ast.parse(code),
+                include_attributes=False,
+            )
+
+            formatted_ast = ast.dump(
+                ast.parse(formatted_once),
+                include_attributes=False,
+            )
+
+            self.assertEqual(
+                original_ast,
+                formatted_ast,
+            f"AST mismatch in {path}",
+            )
+
+            self.assertEqual(
+                formatted_once,
+                formatted_twice,
+            f"Not idempotent in {path}",
+             )    
+    def test_self_host_tests_package(self):
+
+        from pathlib import Path
+        import ast
+
+        files = list(Path("tests").glob("*.py"))
+
+        for path in files:
+
+            code = path.read_text(encoding="utf-8")
+
+            formatted_once = self.formatter.format(code)
+            formatted_twice = self.formatter.format(formatted_once)
+
+            original_ast = ast.dump(
+                ast.parse(code),
+                include_attributes=False,
+            )
+
+            formatted_ast = ast.dump(
+                ast.parse(formatted_once),
+                include_attributes=False,
+            )
+
+            self.assertEqual(
+                original_ast,
+                formatted_ast,
+            f"AST mismatch in {path}",
+        )
+
+            self.assertEqual(
+                formatted_once,
+                formatted_twice,
+            f"Not idempotent in {path}",
+        )  
+    def test_return_without_value(self):
+        code = """
+def func():
+    return
+"""
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )        
+    def test_raise_without_exception(self):
+        code = """
+def func():
+    try:
+        x()
+    except:
+        raise
+"""
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )  
+    def test_raise_from(self):
+        code = """
+def func():
+    try:
+        x()
+    except Exception as e:
+        raise ValueError("bad") from e
+"""
+
+        formatted = self.formatter.format(code)
+
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )    
+                                                                  
 if __name__ == "__main__":
         unittest.main()
 

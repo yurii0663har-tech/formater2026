@@ -52,15 +52,16 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
 
     def visit_ClassDef(self, node):
-        # decorators
+
         for decorator in node.decorator_list:
             self.write(
                 f"@{ast.unparse(decorator)}"
-                )
+        )
+
         if node.bases:
 
             bases = ", ".join(
-                ast.unparse(base)
+               ast.unparse(base)
                 for base in node.bases
             )
 
@@ -69,7 +70,6 @@ class FormatterEngine(ast.NodeVisitor):
         else:
 
             header = f"class {node.name}:"
-
 
         self.write(header)
 
@@ -139,14 +139,16 @@ class FormatterEngine(ast.NodeVisitor):
     def visit_match_case(self, node):
 
         pattern = ast.unparse(node.pattern)
-        line = f"case {pattern}"
 
         if node.guard:
-            line += f" if {ast.unparse(node.guard)}"
+            self.write(
+                f"case {pattern} if {ast.unparse(node.guard)}:"
+            )
+        else:
+            self.write(
+                f"case {pattern}:"
+            )
 
-        line += ":"
-        self.write(line)
-    
         self.level += 1
 
         for stmt in node.body:
@@ -171,6 +173,25 @@ class FormatterEngine(ast.NodeVisitor):
         self.level -= 1
 
 
+    def visit_match_case(self, node):
+
+        pattern = ast.unparse(node.pattern)
+
+        line = f"case {pattern}"
+
+        if node.guard:
+            line += f" if {ast.unparse(node.guard)}"
+
+        line += ":"
+
+        self.write(line)
+
+        self.level += 1
+
+        for stmt in node.body:
+            self.visit(stmt)
+
+        self.level -= 1  
     
     # RETURN
     # -------------------------
@@ -422,7 +443,10 @@ class FormatterEngine(ast.NodeVisitor):
 
         for handler in node.handlers:
 
-            text = f"except {ast.unparse(handler.type)}"
+            if handler.type:
+                text = f"except {ast.unparse(handler.type)}"
+            else:
+                text = "except"
 
             if handler.name:
                 text += f" as {handler.name}"
@@ -462,7 +486,35 @@ class FormatterEngine(ast.NodeVisitor):
 
             self.level -= 1
             
-    
+    def visit_TryStar(self, node):
+
+        self.write("try:")
+
+        self.level += 1
+
+        for item in node.body:
+            self.visit(item)
+
+        self.level -= 1
+
+
+        for handler in node.handlers:
+  
+            text = f"except* {ast.unparse(handler.type)}"
+
+            if handler.name:
+                text += f" as {handler.name}"
+
+            text += ":"
+
+            self.write(text)
+
+            self.level += 1
+
+        for item in handler.body:
+            self.visit(item)
+
+            self.level -= 1
 
     def visit_TryStar(self, node):
 
@@ -571,38 +623,7 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             ast.unparse(node)
         )
-        
         # -------------------------
-    # VARIABLE ANNOTATION
-    # -------------------------
-
-    def visit_AnnAssign(self, node):
-
-        target = ast.unparse(node.target)
-        annotation = ast.unparse(node.annotation)
-
-        if node.value:
-            value = ast.unparse(node.value)
-
-            self.write(
-                f"{target}: {annotation} = {value}"
-            )
-        else:
-            self.write(
-                f"{target}: {annotation}"
-            )
-             # -------------------------
-    # ASSIGN
-    # -------------------------
-
-    def visit_Assign(self, node):
-
-        self.write(
-            ast.unparse(node)
-        )
-
-
-    # -------------------------
     # AUG ASSIGN
     # -------------------------
 
@@ -624,18 +645,37 @@ class FormatterEngine(ast.NodeVisitor):
             "BitXor": "^=",
             "LShift": "<<=",
             "RShift": ">>=",
+            "MatMult": "@=",
         }
 
-        op = operators[type(node.op).__name__]
-
-        self.write(
-            f"{target} {op} {value}"
+        operator = operators.get(
+            type(node.op).__name__,
+            "?="
         )
 
-
-    # -------------------------
+        self.write(
+            f"{target} {operator} {value}"
+        )   
+        # -------------------------
     # VARIABLE ANNOTATION
-    # ------------------------- 
+    # -------------------------
+
+    def visit_AnnAssign(self, node):
+
+        target = ast.unparse(node.target)
+        annotation = ast.unparse(node.annotation)
+
+        if node.value:
+            value = ast.unparse(node.value)
+
+            self.write(
+                f"{target}: {annotation} = {value}"
+            )
+        else:
+            self.write(
+                f"{target}: {annotation}"
+            )
+            
         # -------------------------
     # TYPE ALIAS
     # -------------------------
@@ -650,7 +690,7 @@ class FormatterEngine(ast.NodeVisitor):
             f"type {name} = {value}"
         )
         
-    
+  
     # -------------------------
     # PASS
     # -------------------------

@@ -482,42 +482,7 @@ values = {x for x in numbers}
         )
 
 
-    def test_match_statement(self):
-
-        code = """
-def check(value):
- match value:
-  case 1:
-   print("one")
-  case _:
-   print("other")
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "match value:",
-            result
-        )
-
-        self.assertIn(
-            "case 1:",
-            result
-        )
-
-        self.assertIn(
-            "case _:",
-            result
-        )
-
-      
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "{x for x in numbers}",
-            result
-        )
+    
 
 
     def test_complex_match_patterns(self):
@@ -698,20 +663,7 @@ def fail():
         "raise RuntimeError('failed') from e",
             result
     ) 
-    def test_await_expression(self):
-
-        code = """
-async def load():
- result = await fetch()
- return result
-"""
-
-        result = self.formatter.format(code)
-
-        self.assertIn(
-            "await fetch()",
-            result
-        )
+    
         
     def test_yield_statement(self):
 
@@ -2761,7 +2713,38 @@ def func():
             ast.dump(ast.parse(code), include_attributes=False),
             ast.dump(ast.parse(formatted), include_attributes=False),
         )    
-                                                                  
+     
+    def test_async_function_with_decorator(self):
+        code = """
+@decorator
+async def fetch():
+    await request()
+"""
+
+        formatted = self.formatter.format(code)
+
+        self.assertIn("@decorator", formatted)
+        self.assertIn("async def fetch():", formatted)
+        self.assertIn("await request()", formatted)
+     
+ 
+    
+   
+
+    
+    def test_empty_yield(self):
+        code = """
+def gen():
+    yield
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn(
+        "yield",
+            result
+        )
+                                                                      
 if __name__ == "__main__":
         unittest.main()
 

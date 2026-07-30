@@ -323,9 +323,7 @@ class FormatterEngine(ast.NodeVisitor):
     # -------------------------
 
     def visit_If(self, node):
-
-        
-        
+  
 
         self.write(
             f"if {ast.unparse(node.test)}:"
@@ -336,11 +334,7 @@ class FormatterEngine(ast.NodeVisitor):
         for item in node.body:
             self.visit(item)
 
-        
-
-        self.level -= 1
-        
-        
+        self.level -= 1              
         
 
         if node.orelse:
@@ -499,7 +493,7 @@ class FormatterEngine(ast.NodeVisitor):
 
 
         for handler in node.handlers:
-  
+
             text = f"except* {ast.unparse(handler.type)}"
 
             if handler.name:
@@ -511,21 +505,10 @@ class FormatterEngine(ast.NodeVisitor):
 
             self.level += 1
 
-        for item in handler.body:
-            self.visit(item)
+            for item in handler.body:
+                self.visit(item)
 
             self.level -= 1
-
-    def visit_TryStar(self, node):
-
-        self.write("try:")
-
-        self.level += 1
-
-        for item in node.body:
-            self.visit(item)
-
-        self.level -= 1
 
         for handler in node.handlers:
 

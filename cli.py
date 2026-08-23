@@ -1,0 +1,24 @@
+
+import sys
+
+from core.pipeline import FormatterPipeline
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python cli.py <file.py>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+
+    with open(filename, "r", encoding="utf-8") as f:
+        code = f.read()
+
+    formatter = FormatterPipeline()
+    formatted = formatter.format(code)
+
+    print(formatted)
+
+
+if __name__ == "__main__":
+    main()

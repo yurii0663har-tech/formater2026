@@ -1,4 +1,3 @@
-
 import sys
 
 from core.pipeline import FormatterPipeline
@@ -16,8 +15,12 @@ def main():
         print("Unknown option. Use --write.")
         sys.exit(1)
 
-    with open(filename, "r", encoding="utf-8") as f:
-        code = f.read()
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            code = f.read()
+    except FileNotFoundError:
+        print(f"File not found: {filename}", file=sys.stderr)
+        sys.exit(1)
 
     formatter = FormatterPipeline()
     formatted = formatter.format(code)

@@ -40,6 +40,16 @@ class CLITests(unittest.TestCase):
             self.assertIn("x = 1", content)
             self.assertIn("print(x)", content)
 
+    def test_cli_missing_file(self):
+        result = subprocess.run(
+            [sys.executable, "cli.py", "missing_file.py"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("File not found", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -64,6 +64,33 @@ class CLITests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Syntax error", result.stderr)
 
+    def test_cli_check_formatted_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "demo.py"
+            path.write_text("x = 1\nprint(x)\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, "cli.py", str(path), "--check"],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0)
+
+    def test_cli_check_unformatted_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "demo.py"
+            path.write_text("x=1\nprint(x)\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, "cli.py", str(path), "--check"],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("File is not formatted", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

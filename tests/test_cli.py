@@ -50,6 +50,20 @@ class CLITests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("File not found", result.stderr)
 
+    def test_cli_syntax_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "broken.py"
+            path.write_text("def foo(\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, "cli.py", str(path)],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Syntax error", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

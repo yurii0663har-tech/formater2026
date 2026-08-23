@@ -23,7 +23,12 @@ def main():
         sys.exit(1)
 
     formatter = FormatterPipeline()
-    formatted = formatter.format(code)
+
+    try:
+        formatted = formatter.format(code)
+    except SyntaxError as e:
+        print(f"Syntax error: {e}", file=sys.stderr)
+        sys.exit(1)
 
     if write:
         with open(filename, "w", encoding="utf-8") as f:

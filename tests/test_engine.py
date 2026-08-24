@@ -7,6 +7,22 @@ from core.pipeline import FormatterPipeline
 
 
 class TestFormatterPipeline(unittest.TestCase):
+    
+    def test_if_elif_else(self):
+        code = """
+if x:
+    a()
+elif y:
+    b()
+else:
+    c()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn("if x:", result)
+        self.assertIn("elif y:", result)
+        self.assertIn("else:", result)
 
     def setUp(self):
         self.formatter = FormatterPipeline()
@@ -15,7 +31,7 @@ class TestFormatterPipeline(unittest.TestCase):
 
         code = """
 def hello():
- print("Hello")
+print("Hello")
 """
 
         expected = """def hello():
@@ -29,8 +45,8 @@ def hello():
 
         code = """
 def check():
- if True:
-  print("OK")
+if True:
+    print("OK")
 """
 
         expected = """def check():
@@ -48,7 +64,7 @@ import os
 from pathlib import Path
 
 def hello():
- print("Hello")
+print("Hello")
 """
 
         result = self.formatter.format(code)
@@ -61,8 +77,8 @@ def hello():
 
         code = """
 def process(items):
- for item in items:
-  print(item)
+    for item in items:
+        print(item)
 """
 
         result = self.formatter.format(code)
@@ -74,8 +90,8 @@ def process(items):
 
         code = """
 def process():
- while True:
-  return 1
+    while True:
+        return 1
 """
 
         result = self.formatter.format(code)
@@ -87,9 +103,9 @@ def process():
 
         code = """
 def load():
- try:
-  print("start")
- except Exception:
+    try:
+    print("start")
+    except Exception:
   print("error")
 """
 

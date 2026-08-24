@@ -17,7 +17,7 @@ def main():
         sys.exit(1)
 
     try:
-        with open(filename, "r", encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8-sig") as f:
             code = f.read()
     except FileNotFoundError:
         print(f"File not found: {filename}", file=sys.stderr)

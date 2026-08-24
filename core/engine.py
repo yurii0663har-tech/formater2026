@@ -1,4 +1,4 @@
-import ast
+﻿import ast
 
 
 class FormatterEngine(ast.NodeVisitor):
@@ -195,6 +195,8 @@ class FormatterEngine(ast.NodeVisitor):
     
     # RETURN
     # -------------------------
+    def visit_Expr(self, node):
+        self.write(ast.unparse(node.value))
 
     def visit_Return(self, node):
        
@@ -277,7 +279,8 @@ class FormatterEngine(ast.NodeVisitor):
         self.write(
             "break"
         )
-
+    def visit_Continue(self, node):
+        self.write("continue")
         # -------------------------
     # GLOBAL
     # -------------------------
@@ -302,56 +305,59 @@ class FormatterEngine(ast.NodeVisitor):
     # CONTINUE
     # -------------------------
 
-    def visit_Continue(self, node):
-
-        self.write(
-            "continue"
-        )
-    # -------------------------
-    # EXPRESSIONS
-    # -------------------------
-
-    def visit_Expr(self, node):
-
-        self.write(
-            ast.unparse(node.value)
-        )
-
-
-    # -------------------------
-    # IF
-    # -------------------------
-
     def visit_If(self, node):
-  
-
-        self.write(
-            f"if {ast.unparse(node.test)}:"
-        )
+        self.write(f"if {ast.unparse(node.test)}:")
 
         self.level += 1
-
         for item in node.body:
             self.visit(item)
+        self.level -= 1
 
-        self.level -= 1              
-        
+        if not node.orelse:
+            return
 
-        if node.orelse:
+        # else containing another if = elif
+        if len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If):
+            self.visit_elif_chain(node.orelse[0])
+            return
 
-            self.write("else:")
+        # ordinary else
+        self.write("else:")
 
-            self.level += 1
-
-            for item in node.orelse:
-                self.visit(item)
-
-            self.level -= 1
+        self.level += 1
+        for item in node.orelse:
+            self.visit(item)
+        self.level -= 1
 
 
-    # -------------------------
-    # FOR
-    # -------------------------
+    def visit_elif_chain(self, node):
+        self.write(f"elif {ast.unparse(node.test)}:")
+
+        self.level += 1
+        for item in node.body:
+            self.visit(item)
+        self.level -= 1
+
+        if not node.orelse:
+            return
+
+        # another nested if = another elif
+        if len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If):
+            self.visit_elif_chain(node.orelse[0])
+            return
+
+        # final else
+        self.write("else:")
+
+        self.level += 1
+        for item in node.orelse:
+            self.visit(item)
+        self.level -= 1   
+
+
+        # -------------------------
+        # FOR
+        # -------------------------
 
     def visit_For(self, node):
 

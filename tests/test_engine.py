@@ -7,7 +7,29 @@ from core.pipeline import FormatterPipeline
 
 
 class TestFormatterPipeline(unittest.TestCase):
-    
+
+    def test_match_case_nested_block(self):
+        code = """
+match value:
+    case 1:
+        if ready:
+            process()
+        else:
+            skip()
+    case _:
+        fallback()
+"""
+
+        result = self.formatter.format(code)
+
+        self.assertIn("match value:", result)
+        self.assertIn("case 1:", result)
+        self.assertIn("if ready:", result)
+        self.assertIn("process()", result)
+        self.assertIn("else:", result)
+        self.assertIn("skip()", result)
+        self.assertIn("case _:", result)
+        self.assertIn("fallback()", result)  
     def test_if_elif_else(self):
         code = """
 if x:

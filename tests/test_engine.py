@@ -2468,10 +2468,7 @@ def handle(value):
         
         from pathlib import Path
 
-        Path("engine_formatted.py").write_text(
-            formatted_once,
-            encoding="utf-8",
-) 
+
         #formatted_twice = self.formatter.format(formatted_once)
 
        # original_ast = ast.dump(

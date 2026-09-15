@@ -4,6 +4,14 @@ from core.pipeline import FormatterPipeline
 
 
 def main():
+    if len(sys.argv) == 2 and sys.argv[1] in ("--help", "-h"):
+        print("Usage: python cli.py <file.py> [--write|--check]")
+        print()
+        print("Options:")
+        print("  --write    Format the file in place")
+        print("  --check    Check whether the file is formatted")
+        print("  --help     Show this help message")
+        sys.exit(0)
     if len(sys.argv) not in (2, 3):
         print("Usage: python cli.py <file.py> [--write|--check]")
         sys.exit(1)

@@ -5,6 +5,7 @@ import ast
 
 from core.pipeline import FormatterPipeline
 
+from core.config import FormatterConfig
 
 class TestFormatterPipeline(unittest.TestCase):
 
@@ -48,6 +49,23 @@ else:
 
     def setUp(self):
         self.formatter = FormatterPipeline()
+
+    def test_custom_indent_size(self):
+        code = """
+def hello():
+    print("hi")
+"""
+
+        expected = """def hello():
+  print('hi')"""
+
+        formatter = FormatterPipeline(
+            FormatterConfig(indent_size=2)
+        )
+
+        result = formatter.format(code)
+
+        self.assertEqual(result, expected)
 
     def test_simple_function(self):
 

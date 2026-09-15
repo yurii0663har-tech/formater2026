@@ -89,6 +89,17 @@ class CLITests(unittest.TestCase):
         self.assertIn("--write", result.stdout)
         self.assertIn("--check", result.stdout)
 
+    def test_cli_short_help(self):
+        result = subprocess.run(
+            [sys.executable, "cli.py", "-h"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("Usage:", result.stdout)
+        self.assertIn("--help", result.stdout)
+
     def test_cli_check_unformatted_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "demo.py"

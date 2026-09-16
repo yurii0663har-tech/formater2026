@@ -2812,9 +2812,26 @@ def gen():
             result
         )
                                                                       
+
+    def test_custom_max_line_length(self):
+        formatter = FormatterPipeline(
+            FormatterConfig(max_line_length=40)
+        )
+
+        code = """
+def hello():
+    return "this is a very long string"
+"""
+
+        result = formatter.format(code)
+
+        self.assertTrue(
+            all(len(line) <= 40 for line in result.splitlines())
+        )
 if __name__ == "__main__":
         unittest.main()
 
 
 
     
+

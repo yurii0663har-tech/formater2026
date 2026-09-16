@@ -1,8 +1,9 @@
 class PythonFormatter:
 
-    def __init__(self, indent_size=4, quote_style="single"):
+    def __init__(self, indent_size=4, quote_style="single", max_line_length=120): 
         self.indent_size = indent_size
         self.quote_style = quote_style
+        self.max_line_length = max_line_length
 
     def format(self, code: str) -> str:
         code = self.normalize_tabs(code)
@@ -39,6 +40,31 @@ class PythonFormatter:
             line = line.rstrip()
 
             lines.append(line)
+
+        return "\n".join(lines)
+
+    def limit_line_length(self, code):
+        lines = []
+
+        for line in code.splitlines():
+            if len(line) <= self.max_line_length:
+                lines.append(line)
+                continue
+
+            words = line.split()
+            current = ""
+
+            for word in words:
+                if not current:
+                    current = word
+                elif len(current) + 1 + len(word) <= self.max_line_length:
+                    current += " " + word
+                else:
+                    lines.append(current)
+                    current = word
+
+            if current:
+                lines.append(current)
 
         return "\n".join(lines)
 

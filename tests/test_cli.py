@@ -114,6 +114,27 @@ class CLITests(unittest.TestCase):
             self.assertEqual(result.returncode, 1)
             self.assertIn("File is not formatted", result.stderr)
 
+    def test_cli_write_formats_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "demo.py"
+            path.write_text("x=1\nprint(x)\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, "cli.py", str(path), "--write"],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0)
+
+            check = subprocess.run(
+                [sys.executable, "cli.py", str(path), "--check"],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(check.returncode, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

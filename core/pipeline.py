@@ -21,10 +21,10 @@ class FormatterPipeline:
         self.engine = FormatterEngine(
             indent_size=config.indent_size
         )
-
         self.formatter = PythonFormatter(
-            indent_size=config.indent_size
-        )
+            indent_size=config.indent_size,
+            quote_style=config.quote_style
+    )
 
         self.rules = [
             RemoveTrailingSpacesRule(),

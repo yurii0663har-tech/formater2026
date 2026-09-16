@@ -1,16 +1,16 @@
 class PythonFormatter:
 
-    def __init__(self, indent_size=4):
+    def __init__(self, indent_size=4, quote_style="single"):
         self.indent_size = indent_size
-
+        self.quote_style = quote_style
 
     def format(self, code: str) -> str:
         code = self.normalize_tabs(code)
         code = self.fix_indentation(code)
         code = self.clean_spaces(code)
+        code = self.apply_quote_style(code)
 
         return code
-
 
     def normalize_tabs(self, code):
         return code.replace("\t", " " * self.indent_size)
@@ -41,3 +41,35 @@ class PythonFormatter:
             lines.append(line)
 
         return "\n".join(lines)
+
+    def apply_quote_style(self, code):
+        if self.quote_style == "single":
+            return code
+
+        if self.quote_style != "double":
+            return code
+
+        import io
+        import tokenize
+
+        tokens = []
+        reader = io.StringIO(code).readline
+
+        for token in tokenize.generate_tokens(reader):
+            if token.type == tokenize.STRING:
+                value = token.string
+
+                if value.startswith("'") and value.endswith("'"):
+                    value = '"' + value[1:-1].replace('"', '\\"') + '"'
+
+                token = tokenize.TokenInfo(
+                    token.type,
+                    value,
+                    token.start,
+                    token.end,
+                    token.line,
+                )
+
+            tokens.append(token)
+
+        return tokenize.untokenize(tokens)

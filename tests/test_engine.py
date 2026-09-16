@@ -50,6 +50,20 @@ else:
     def setUp(self):
         self.formatter = FormatterPipeline()
 
+    def test_custom_quote_style_double(self):
+        formatter = FormatterPipeline(
+            FormatterConfig(quote_style="double")
+        )
+
+        code = """
+def hello():
+    return 'hello'
+"""
+
+        result = formatter.format(code)
+
+        self.assertIn('return "hello"', result)
+
     def test_custom_indent_size(self):
         code = """
 def hello():

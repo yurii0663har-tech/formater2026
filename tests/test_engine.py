@@ -64,6 +64,20 @@ def hello():
 
         self.assertIn('return "hello"', result)
 
+    def test_custom_quote_style_double_with_inner_quotes(self):
+        formatter = FormatterPipeline(
+            FormatterConfig(quote_style="double")
+        )
+
+        code = """
+def hello():
+    return 'He said "hello"'
+"""
+
+        result = formatter.format(code)
+
+        self.assertIn('return "He said \\"hello\\""', result)
+
     def test_custom_indent_size(self):
         code = """
 def hello():

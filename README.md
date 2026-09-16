@@ -6,6 +6,8 @@ PythonFormatterPro is a Python source-code formatter based on the Python AST.
 
 - AST-based Python code formatting
 - Configurable indentation
+- Configurable maximum line length
+- Configurable quote style
 - Removal of trailing spaces
 - Removal of excessive empty lines
 - CLI formatting

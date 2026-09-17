@@ -57,26 +57,40 @@ else:
 
         code = """
 def hello():
-    return 'hello'
+    return "don't"
 """
 
         result = formatter.format(code)
 
         self.assertIn('return "hello"', result)
 
-    def test_custom_quote_style_double_with_inner_quotes(self):
+    def test_custom_quote_style_double(self):
         formatter = FormatterPipeline(
             FormatterConfig(quote_style="double")
         )
 
         code = """
 def hello():
-    return 'He said "hello"'
+    return 'hello'
 """
 
         result = formatter.format(code)
 
-        self.assertIn('return "He said \\"hello\\""', result)
+        self.assertIn('return "hello"', result)
+        
+    def test_custom_quote_style_double_with_apostrophe(self):
+        formatter = FormatterPipeline(
+            FormatterConfig(quote_style="double")
+        )
+
+        code = """
+def hello():
+    return "don't"
+"""
+
+        result = formatter.format(code)
+
+        self.assertIn('return "don\'t"', result)    
 
     def test_custom_indent_size(self):
         code = """

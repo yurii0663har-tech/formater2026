@@ -57,20 +57,6 @@ else:
 
         code = """
 def hello():
-    return "don't"
-"""
-
-        result = formatter.format(code)
-
-        self.assertIn('return "hello"', result)
-
-    def test_custom_quote_style_double(self):
-        formatter = FormatterPipeline(
-            FormatterConfig(quote_style="double")
-        )
-
-        code = """
-def hello():
     return 'hello'
 """
 

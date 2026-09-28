@@ -23,7 +23,8 @@ def hello():
                 {
                     "type": "function",
                     "name": "hello",
-                    "line": 2
+                    "line": 2,
+                    "decorators": []
                 }
             ]
         )
@@ -73,7 +74,8 @@ class Person:
                 {
                     "type": "function",
                     "name": "hello",
-                    "line": 3
+                    "line": 3,
+                    "decorators": []
                 }
             ]
         )
@@ -96,6 +98,30 @@ async def load_data():
                     "type": "function",
                     "name": "load_data",
                     "line": 2
+                }
+            ]
+        )
+
+    def test_decorated_function(self):
+        code = """
+@app.route("/")
+def index():
+    pass
+"""
+
+        tree = ast.parse(code)
+
+        analyzer = CodeAnalyzer()
+        analyzer.visit(tree)
+
+        self.assertEqual(
+            analyzer.blocks,
+            [
+                {
+                    "type": "function",
+                    "name": "index",
+                    "line": 3,
+                    "decorators": ["route"]
                 }
             ]
         )

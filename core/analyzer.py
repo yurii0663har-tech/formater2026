@@ -8,11 +8,22 @@ class CodeAnalyzer(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
 
+        decorators = []
+
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name):
+                decorators.append(decorator.id)
+
+            elif isinstance(decorator, ast.Call):
+                if isinstance(decorator.func, ast.Attribute):
+                    decorators.append(decorator.func.attr)
+
         self.blocks.append(
             {
                 "type": "function",
                 "name": node.name,
-                "line": node.lineno
+                "line": node.lineno,
+                "decorators": decorators
             }
         )
 

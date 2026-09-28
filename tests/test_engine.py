@@ -6,6 +6,9 @@ import ast
 from core.pipeline import FormatterPipeline
 
 from core.config import FormatterConfig
+from core.formatter import PythonFormatter
+from core.engine import FormatterEngine
+from core.rules import FormattingRule, RemoveExtraEmptyLinesRule
 
 class TestFormatterPipeline(unittest.TestCase):
 
@@ -50,6 +53,42 @@ else:
     def setUp(self):
         self.formatter = FormatterPipeline()
 
+    def test_engine_visit_yield_directly(self):
+        engine = FormatterEngine()
+
+        engine.visit_Yield(ast.parse("yield 42").body[0].value)
+        engine.visit_Yield(ast.parse("yield").body[0].value)
+
+        self.assertEqual(
+            engine.lines,
+            ["yield 42", "yield"]
+        )
+
+    def test_engine_visit_yield_both_forms(self):
+        tree = ast.parse(
+            "def generate():\n"
+            "    yield 42\n"
+            "    yield\n"
+        )
+        engine = FormatterEngine()
+        result = engine.format(tree)
+        self.assertIn("yield 42", result)
+        self.assertIn("yield", result)
+
+    def test_engine_await_via_function(self):
+        tree = ast.parse(
+            "async def load():\n" +
+            "    return await fetch()\n"
+        )
+        engine = FormatterEngine()
+        result = engine.format(tree)
+        self.assertIn("return await fetch()", result)
+
+    def test_formatter_preserves_empty_lines(self):
+        formatter = PythonFormatter()
+        result = formatter.fix_indentation("x = 1\n\n    y = 2")
+        self.assertEqual(result, "x = 1\n\n    y = 2")
+
     def test_custom_quote_style_double(self):
         formatter = FormatterPipeline(
             FormatterConfig(quote_style="double")
@@ -64,6 +103,32 @@ def hello():
 
         self.assertIn('return "hello"', result)
         
+    def test_formatter_limit_line_length_keeps_short_line(self):
+        formatter = PythonFormatter(max_line_length=20)
+        result = formatter.limit_line_length("short line")
+        self.assertEqual(result, "short line")
+
+    def test_formatter_limit_line_length(self):
+        formatter = PythonFormatter(max_line_length=20)
+        result = formatter.limit_line_length(
+            "one two three four five six"
+        )
+        self.assertTrue(
+            all(len(line) <= 20 for line in result.splitlines())
+        )
+        self.assertIn("one two three four", result)
+        self.assertIn("five six", result)
+
+    def test_formatter_unknown_quote_style(self):
+        formatter = PythonFormatter(quote_style="triple")
+        result = formatter.apply_quote_style("return 'hello'")
+        self.assertEqual(result, "return 'hello'")
+
+    def test_formatter_double_quote_style_single_quoted_string(self):
+        formatter = PythonFormatter(quote_style="double")
+        result = formatter.apply_quote_style("return 'hello'")
+        self.assertEqual(result, 'return "hello"')
+
     def test_custom_quote_style_double_with_apostrophe(self):
         formatter = FormatterPipeline(
             FormatterConfig(quote_style="double")
@@ -400,7 +465,7 @@ class Admin(User):
     
         )
         
-    def test_decorator_statement(self):
+    def test_decorator_statement_basic(self):
 
         code = """
 class User:
@@ -497,7 +562,7 @@ async def fetch():
             result
         )
         
-    def test_lambda_expression(self):
+    def test_lambda_expression_basic(self):
 
         code = """
 square = lambda x: x * x
@@ -538,7 +603,7 @@ squares = {x: x*x for x in numbers}
             result
         )
 
-    def test_set_comprehension(self):
+    def test_set_comprehension_basic(self):
 
         code = """
 values = {x for x in numbers}
@@ -975,7 +1040,7 @@ P = ParamSpec("P")
             "P = ParamSpec('P')",
             result
         )  
-    def test_typevartuple_statement(self):
+    def test_typevartuple_statement_basic(self):
 
         code = """
 from typing import TypeVarTuple
@@ -1565,6 +1630,10 @@ def grade(score):
                 return item
         else:
             return None 
+    def test_find_helper(self):
+        self.assertEqual(TestFormatterPipeline.find([None, "A"]), "A")
+        self.assertIsNone(TestFormatterPipeline.find([None, None]))
+
     def test_for_else_ast_equivalence(self):
 
         code = """
@@ -2519,19 +2588,18 @@ def handle(value):
 
             from pathlib import Path
 
-        Path(f"debug_{path.stem}.py").write_text(
-        formatted_once,
-        encoding="utf-8",
-    )
-            
+            Path(f"debug_{path.stem}.py").write_text(
+                formatted_once,
+                encoding="utf-8",
+            )
 
-        try:
-            formatted_twice = self.formatter.format(formatted_once)
-        except Exception as e:
-            raise AssertionError(f"Failed in {path}") from e
+            try:
+                formatted_twice = self.formatter.format(formatted_once)
+            except Exception as e:
+                raise AssertionError(f"Failed in {path}") from e
 
             original_ast = ast.dump(
-                ast.parse(code),
+            ast.parse(code.replace("\ufeff", "")),
                 include_attributes=False,
             )
 
@@ -2551,38 +2619,39 @@ def handle(value):
                 formatted_twice,
                 f"Not idempotent in {path}",
             )
-        def test_list_comprehension(self):
-            code = """
+
+    def test_list_comprehension_basic(self):
+        code = """
 result = [x * 2 for x in values if x > 0]
 """
 
-            formatted = self.formatter.format(code)
+        formatted = self.formatter.format(code)
 
-            self.assertEqual(
-                ast.dump(ast.parse(code), include_attributes=False),
-                ast.dump(ast.parse(formatted), include_attributes=False),
-    ) 
-        def test_list_comprehension(self):
-            code = """
+        self.assertEqual(
+            ast.dump(ast.parse(code), include_attributes=False),
+            ast.dump(ast.parse(formatted), include_attributes=False),
+        )
+    def test_list_comprehension(self):
+        code = """
 result = [x * 2 for x in values if x > 0]
 """
 
-            formatted = self.formatter.format(code)
+        formatted = self.formatter.format(code)
 
-            original_ast = ast.dump(
-                ast.parse(code),
-                include_attributes=False,
-    )
+        original_ast = ast.dump(
+            ast.parse(code),
+            include_attributes=False,
+        )
 
-            formatted_ast = ast.dump(
-                ast.parse(formatted),
-                include_attributes=False,
-    )
+        formatted_ast = ast.dump(
+            ast.parse(formatted),
+            include_attributes=False,
+        )
 
-            self.assertEqual(
-                original_ast,
-                formatted_ast,
-            )    
+        self.assertEqual(
+            original_ast,
+            formatted_ast,
+        )
     def test_lambda_expression(self):
         code = """
 func = lambda x: x + 1
@@ -2817,10 +2886,77 @@ def hello():
         self.assertTrue(
             all(len(line) <= 40 for line in result.splitlines())
         )
+    def test_engine_if_without_else_and_elif_chain(self):
+        engine = FormatterEngine()
+
+        tree = ast.parse(
+            "if x:\n"
+            "    y = 1\n"
+            "elif z:\n"
+            "    y = 2\n"
+        )
+
+        result = engine.format(tree)
+
+        self.assertIn("if x:", result)
+        self.assertIn("elif z:", result)
+
+    def test_engine_visit_elif_chain_directly(self):
+        engine = FormatterEngine()
+        node = ast.parse(
+            "if x:\n"
+            "    y = 1\n"
+            "elif z:\n"
+            "    y = 2\n"
+        ).body[0]
+
+        engine.visit_elif_chain(node)
+
+        self.assertIn("elif z:", engine.lines)
+
+    def test_engine_visit_await_directly(self):
+        engine = FormatterEngine()
+        node = ast.parse("await fetch()").body[0].value
+
+        engine.visit_Await(node)
+
+        self.assertEqual(
+            engine.lines,
+            ["await fetch()"]
+        )
+
+    def test_remove_extra_empty_lines_with_empty_line(self):
+        rule = RemoveExtraEmptyLinesRule()
+
+        result = rule.apply("first\n\nsecond")
+
+        self.assertEqual(result, "first\n\nsecond")
+
+    def test_formatting_rule_apply_body(self):
+        class TestRule(FormattingRule):
+            def apply(self, code):
+                return super().apply(code)
+
+        rule = TestRule()
+        self.assertIsNone(rule.apply("test"))
+
 if __name__ == "__main__":
-        unittest.main()
+    unittest.main()
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

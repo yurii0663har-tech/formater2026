@@ -159,7 +159,7 @@ def hello():
         result = formatter.format(code)
 
         self.assertEqual(result, expected)
-
+    
     def test_simple_function(self):
 
         code = """
@@ -2869,8 +2869,7 @@ def gen():
         "yield",
             result
         )
-                                                                      
-
+                                                            
     def test_custom_max_line_length(self):
         formatter = FormatterPipeline(
             FormatterConfig(max_line_length=40)
@@ -2878,7 +2877,7 @@ def gen():
 
         code = """
 def hello():
-    return "this is a very long string"
+    return one + two + three + four + five + six + seven
 """
 
         result = formatter.format(code)
@@ -2886,6 +2885,7 @@ def hello():
         self.assertTrue(
             all(len(line) <= 40 for line in result.splitlines())
         )
+
     def test_engine_if_without_else_and_elif_chain(self):
         engine = FormatterEngine()
 

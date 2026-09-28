@@ -1,6 +1,10 @@
+import io
+import tokenize
+
+
 class PythonFormatter:
 
-    def __init__(self, indent_size=4, quote_style="single", max_line_length=120): 
+    def __init__(self, indent_size=4, quote_style="single", max_line_length=120):
         self.indent_size = indent_size
         self.quote_style = quote_style
         self.max_line_length = max_line_length
@@ -9,6 +13,7 @@ class PythonFormatter:
         code = self.normalize_tabs(code)
         code = self.fix_indentation(code)
         code = self.clean_spaces(code)
+        code = self.limit_line_length(code)
         code = self.apply_quote_style(code)
 
         return code
@@ -16,10 +21,8 @@ class PythonFormatter:
     def normalize_tabs(self, code):
         return code.replace("\t", " " * self.indent_size)
 
-
     def fix_indentation(self, code):
         lines = code.splitlines()
-
         result = []
 
         for line in lines:
@@ -32,13 +35,10 @@ class PythonFormatter:
         return "\n".join(result)
 
     def clean_spaces(self, code):
-
         lines = []
 
         for line in code.splitlines():
-
             line = line.rstrip()
-
             lines.append(line)
 
         return "\n".join(lines)
@@ -51,19 +51,41 @@ class PythonFormatter:
                 lines.append(line)
                 continue
 
-            words = line.split()
-            current = ""
+            try:
+                tokens = list(
+                    tokenize.generate_tokens(
+                        io.StringIO(line).readline
+                    )
+                )
+            except tokenize.TokenError:
+                lines.append(line)
+                continue
+
+            has_string = any(
+                token.type == tokenize.STRING
+                for token in tokens
+            )
+
+            if has_string:
+                lines.append(line)
+                continue
+
+            indent = line[:len(line) - len(line.lstrip())]
+            content = line.lstrip()
+
+            words = content.split()
+            current = indent
 
             for word in words:
-                if not current:
-                    current = word
+                if current == indent:
+                    current += word
                 elif len(current) + 1 + len(word) <= self.max_line_length:
                     current += " " + word
                 else:
                     lines.append(current)
-                    current = word
+                    current = indent + word
 
-            if current:
+            if current.strip():
                 lines.append(current)
 
         return "\n".join(lines)
@@ -74,9 +96,6 @@ class PythonFormatter:
 
         if self.quote_style != "double":
             return code
-
-        import io
-        import tokenize
 
         tokens = []
         reader = io.StringIO(code).readline

@@ -9,3 +9,5 @@ env/
 
 *.log.coverage
 .coverage
+debug_*.py
+*.py,cover
